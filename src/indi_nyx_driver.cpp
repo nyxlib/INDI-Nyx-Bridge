@@ -63,13 +63,13 @@ bool IndiNyxDriver::initProperties()
     /*----------------------------------------------------------------------------------------------------------------*/
 
     IUFillText(&INDISettingsT[0], "INDI_URL",      "URL",      "");
-    IUFillText(&INDISettingsT[1], "INDI_USERNAME", "Username", "");
-    IUFillText(&INDISettingsT[2], "INDI_PASSWORD", "Password", "");
+    //FillText(&INDISettingsT[1], "INDI_USERNAME", "Username", "");
+    //FillText(&INDISettingsT[2], "INDI_PASSWORD", "Password", "");
 
     IUFillTextVector(
         &INDISettingsTP,
         INDISettingsT,
-        3,
+        1,
         getDeviceName(),
         "INDI_SETTINGS",
         "INDI Settings",
@@ -226,9 +226,6 @@ void IndiNyxDriver::workerThreadFunc()
     {
         nyx_bridge_poll(
             INDISettingsT[0].text,
-            INDISettingsT[1].text,
-            INDISettingsT[2].text,
-            /**/
             MQTTSettingsT[0].text,
             MQTTSettingsT[1].text,
             MQTTSettingsT[2].text,

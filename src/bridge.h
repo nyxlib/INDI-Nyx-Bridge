@@ -27,8 +27,6 @@ void nyx_bridge_finalize();
 
 void nyx_bridge_poll(
     const char *indi_url,
-    const char *indi_username,
-    const char *indi_password,
     const char *mqtt_url,
     const char *mqtt_username,
     const char *mqtt_password,

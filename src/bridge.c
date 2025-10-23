@@ -13,8 +13,10 @@
 
 static struct mg_mgr mgr;
 
-struct mg_connection *indi_connection = NULL;
-struct mg_connection *mqtt_connection = NULL;
+static struct mg_mqtt_opts mqtt_opts = {0};
+
+static struct mg_connection *indi_connection = NULL;
+static struct mg_connection *mqtt_connection = NULL;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -88,16 +90,6 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
 
 static void retry_timer_handler(void *arg)
 {
-    struct mg_mqtt_opts mqtt_opts = {0};
-
-    mqtt_opts.user = mg_str(m_mqtt_username);
-    mqtt_opts.pass = mg_str(m_mqtt_password);
-
-    mqtt_opts.client_id = mg_str("$$");
-
-    mqtt_opts.version = 0x04;
-    mqtt_opts.clean = true;
-
     /*----------------------------------------------------------------------------------------------------------------*/
     /* INDI                                                                                                           */
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -137,6 +129,7 @@ static void retry_timer_handler(void *arg)
         }
     }
 
+    /*----------------------------------------------------------------------------------------------------------------*/
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -150,6 +143,13 @@ void nyx_bridge_initialize()
     /*----------------------------------------------------------------------------------------------------------------*/
 
     mg_mgr_init(&mgr);
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    mqtt_opts.client_id = mg_str("$$");
+
+    mqtt_opts.version = 0x04;
+    mqtt_opts.clean = true;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -169,24 +169,18 @@ void nyx_bridge_finalize()
 
 void nyx_bridge_poll(
     const char *indi_url,
-    const char *indi_username,
-    const char *indi_password,
-    /**/
     const char *mqtt_url,
     const char *mqtt_username,
     const char *mqtt_password,
-    /**/
     int ms
 ) {
     /*----------------------------------------------------------------------------------------------------------------*/
 
     m_indi_url = indi_url;
-    m_indi_username = indi_username;
-    m_indi_password = indi_password;
-
     m_mqtt_url = mqtt_url;
-    m_mqtt_username = mqtt_username;
-    m_mqtt_password = mqtt_password;
+
+    mqtt_opts.user = mg_str(mqtt_username);
+    mqtt_opts.pass = mg_str(mqtt_password);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

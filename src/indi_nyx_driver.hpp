@@ -41,7 +41,7 @@ public:
 private:
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    IText               INDISettingsT[3]{};
+    IText               INDISettingsT[1]{};
     ITextVectorProperty INDISettingsTP{};
 
     IText               MQTTSettingsT[3]{};
