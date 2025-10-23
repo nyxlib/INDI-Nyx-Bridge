@@ -228,9 +228,11 @@ void IndiNyxDriver::workerThreadFunc()
             INDISettingsT[0].text,
             INDISettingsT[1].text,
             INDISettingsT[2].text,
+            /**/
             MQTTSettingsT[0].text,
             MQTTSettingsT[1].text,
             MQTTSettingsT[2].text,
+            /**/
             25
         );
     }
