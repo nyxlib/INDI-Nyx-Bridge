@@ -42,7 +42,7 @@ IndiNyxDriver::~IndiNyxDriver()
 
     m_WorkerRunning = false;
 
-    if(m_WorkerThread.joinable())  m_WorkerThread.join();
+    if(m_WorkerThread.joinable()) m_WorkerThread.join();
 
     /*----------------------------------------------------------------------------------------------------------------*/
 }
@@ -215,8 +215,6 @@ bool IndiNyxDriver::saveConfigItems(FILE *fp)
     return true;
 }
 
-/*--------------------------------------------------------------------------------------------------------------------*/
-/* WORKER THREAD FUNC                                                                                                 */
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void IndiNyxDriver::workerThreadFunc()

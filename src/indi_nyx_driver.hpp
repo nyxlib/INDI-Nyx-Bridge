@@ -50,6 +50,7 @@ private:
     /*----------------------------------------------------------------------------------------------------------------*/
 
     std::atomic<bool> m_WorkerRunning{false};
+
     std::thread m_WorkerThread;
 
     void workerThreadFunc();

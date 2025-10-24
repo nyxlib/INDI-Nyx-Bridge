@@ -36,6 +36,7 @@ find_package(INDI REQUIRED)
 add_executable(indi_nyx
     src/indi_nyx_driver.cpp
     src/external/mongoose.c
+    src/string_builder.c
     src/logger.cpp
     src/bridge.c
 )
