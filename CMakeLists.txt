@@ -39,6 +39,8 @@ add_executable(indi_nyx
     src/string_builder.c
     src/logger.cpp
     src/bridge.c
+    src/transform_json_to_xml.c
+    src/transform_xml_to_json.c
 )
 
 target_link_libraries(indi_nyx

@@ -56,9 +56,24 @@ static void indi_handler(struct mg_connection *connection, int ev, void *ev_data
     {
         MG_ERROR(("%lu INDI ERROR %s", connection->id, (const char *) ev_data));
     }
+    else if(ev == MG_EV_CONNECT)
+    {
+        static const char *hello = "<getProperties version=\"1.7\" />";
+
+        mg_send(
+            connection,
+            /*--*/(hello),
+            strlen(hello)
+        );
+    }
     else if(ev == MG_EV_READ)
     {
-        /* TODO */
+        if(connection->recv.len > 0)
+        {
+            MG_INFO(("%.*s\n", connection->recv.len, connection->recv.buf));
+
+            mg_iobuf_del(&connection->recv, 0, connection->recv.len);
+        }
     }
 }
 
