@@ -28,11 +28,6 @@ nyx_string_builder_t *nyx_string_builder_new()
 
     nyx_string_builder_t *sb = malloc(sizeof(nyx_string_builder_t));
 
-    if(sb == NULL)
-    {
-        exit(1);
-    }
-
     /*----------------------------------------------------------------------------------------------------------------*/
 
     sb->head = NULL;
@@ -99,21 +94,11 @@ void nyx_string_builder_append_n(nyx_string_builder_t *sb, STR_t args[], size_t 
         {
             node = malloc(sizeof(node_t) + 0x00000000000006 + 1);
 
-            if(sb == NULL)
-            {
-                exit(1);
-            }
-
             strcpy((str_t) (node + 1), "(null)");
         }
         else
         {
             node = malloc(sizeof(node_t) + strlen(data) + 1);
-
-            if(sb == NULL)
-            {
-                exit(1);
-            }
 
             strcpy((str_t) (node + 1), data);
         }
@@ -282,11 +267,6 @@ static str_t string_builder_to_string(const nyx_string_builder_t *sb, bool json_
     /*----------------------------------------------------------------------------------------------------------------*/
 
     str_t result = malloc(string_builder_length(sb, json_string) + 1), p = result;
-
-    if(sb == NULL)
-    {
-        exit(1);
-    }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

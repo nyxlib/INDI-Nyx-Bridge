@@ -15,10 +15,10 @@ static struct mg_mgr m_mgr = {0};
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static char *m_indi_url = NULL;
-static char *m_mqtt_url = NULL;
-static char *m_mqtt_user = NULL;
-static char *m_mqtt_pass = NULL;
+static str_t m_indi_url = NULL;
+static str_t m_mqtt_url = NULL;
+static str_t m_mqtt_user = NULL;
+static str_t m_mqtt_pass = NULL;
 
 static struct mg_mqtt_opts m_mqtt_opts = {0};
 
@@ -29,11 +29,51 @@ static struct mg_connection *m_mqtt_connection = NULL;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static const char *nz(const char *s) { return s ? s : ""; }
+static STR_t MQTT_TOPIC_IN  = "nyx/cmd/json";
 
-static int streq(const char *a, const char *b)
+static STR_t MQTT_TOPIC_OUT = "nyx/json";
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+static nyx_x2j_ctx_t *m_x2j = NULL;
+static nyx_j2x_ctx_t *m_j2x = NULL;
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+static STR_t nz(STR_t s) { return s ? s : ""; }
+
+static int streq(STR_t a, STR_t b)
 {
     return strcmp(nz(a), nz(b)) == 0;
+}
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+static void x2j_emit(size_t len, STR_t json)
+{
+    if(m_mqtt_connection != NULL && len > 0 && json != NULL)
+    {
+        struct mg_mqtt_opts pub = {
+            .topic   = mg_str(MQTT_TOPIC_OUT),
+            .message = mg_str_n(json, len),
+            .qos     = 1,
+        };
+
+        MG_INFO(("%s", json));
+
+        mg_mqtt_pub(m_mqtt_connection, &pub);
+    }
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+static void j2x_emit(size_t len, STR_t xml)
+{
+    if(m_indi_connection != NULL && len > 0 && xml != NULL)
+    {
+        MG_INFO(("%s", xml));
+
+        mg_send(m_indi_connection, xml, len);
+    }
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -54,11 +94,11 @@ static void indi_handler(struct mg_connection *connection, int ev, void *ev_data
     }
     else if(ev == MG_EV_ERROR)
     {
-        MG_ERROR(("%lu INDI ERROR %s", connection->id, (const char *) ev_data));
+        MG_ERROR(("%lu INDI ERROR %s", connection->id, (STR_t ) ev_data));
     }
     else if(ev == MG_EV_CONNECT)
     {
-        static const char *hello = "<getProperties version=\"1.7\" />";
+        static STR_t hello = "<getProperties version=\"1.7\" />";
 
         mg_send(
             connection,
@@ -70,7 +110,7 @@ static void indi_handler(struct mg_connection *connection, int ev, void *ev_data
     {
         if(connection->recv.len > 0)
         {
-            MG_INFO(("%.*s\n", connection->recv.len, connection->recv.buf));
+            nyx_x2j_feed(m_x2j, connection->recv.len, (STR_t) connection->recv.buf);
 
             mg_iobuf_del(&connection->recv, 0, connection->recv.len);
         }
@@ -95,17 +135,28 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
     }
     else if(ev == MG_EV_ERROR)
     {
-        MG_ERROR(("%lu MQTT ERROR %s", connection->id, (const char *) ev_data));
+        MG_ERROR(("%lu MQTT ERROR %s", connection->id, (STR_t ) ev_data));
     }
     else if(ev == MG_EV_MQTT_OPEN)
     {
         MG_INFO(("%lu MQTT OPEN", connection->id));
 
-        /* TODO */
+        struct mg_mqtt_opts opts = {
+            .topic = mg_str("nyx/cmd/json"),
+            .qos   = 1,
+        };
+
+        mg_mqtt_sub(connection, &opts);
     }
     else if(ev == MG_EV_MQTT_MSG)
     {
-        /* TODO */
+        struct mg_mqtt_message *message = ev_data;
+
+        if(message->data.len > 0)
+        {
+            MG_INFO(("%.*s", message->data.len, message->data.buf));
+            nyx_j2x_feed(m_j2x, message->data.len, message->data.buf);
+        }
     }
 }
 
@@ -169,6 +220,11 @@ void nyx_bridge_initialize()
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    m_x2j = nyx_x2j_init(x2j_emit);
+    m_j2x = nyx_j2x_init(j2x_emit);
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     mg_timer_add(&m_mgr, 1000, MG_TIMER_REPEAT | MG_TIMER_RUN_NOW, retry_timer_handler, NULL);
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -180,6 +236,9 @@ void nyx_bridge_finalize()
 {
     mg_mgr_free(&m_mgr);
 
+    nyx_x2j_close(m_x2j);
+    nyx_j2x_close(m_j2x);
+
     free(m_indi_url);
     free(m_mqtt_url);
     free(m_mqtt_user);
@@ -189,10 +248,10 @@ void nyx_bridge_finalize()
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void nyx_bridge_poll(
-    const char *indi_url,
-    const char *mqtt_url,
-    const char *mqtt_user,
-    const char *mqtt_pass,
+    STR_t indi_url,
+    STR_t mqtt_url,
+    STR_t mqtt_user,
+    STR_t mqtt_pass,
     int ms
 ) {
     /*----------------------------------------------------------------------------------------------------------------*/
