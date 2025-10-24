@@ -11,13 +11,13 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-int mg_to_indi_log_level = MG_LL_NONE;
+int nyx_curr_log_level = MG_LL_NONE;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void mg_to_indi_log_int(const char *fmt, ...)
+void nyx_log(const char *fmt, ...)
 {
-    if(mg_to_indi_log_level <= mg_log_level)
+    if(nyx_curr_log_level <= mg_log_level)
     {
         char buff[4096];
 
@@ -30,7 +30,7 @@ void mg_to_indi_log_int(const char *fmt, ...)
 
         /*------------------------------------------------------------------------------------------------------------*/
 
-        switch(mg_to_indi_log_level)
+        switch(nyx_curr_log_level)
         {
             case MG_LL_ERROR:   IDLog("[Bridge][ERROR] %s\n", buff);   break;
             case MG_LL_INFO:    IDLog("[Bridge][INFO] %s\n", buff);    break;

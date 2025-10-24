@@ -21,16 +21,30 @@ std::unique_ptr<IndiNyxDriver> indiNyx(new IndiNyxDriver());
 
 IndiNyxDriver::IndiNyxDriver()
 {
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     setVersion(1, 0);
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    m_WorkerRunning = true;
+
+    m_WorkerThread = std::thread(&IndiNyxDriver::workerThreadFunc, this);
+
+    /*----------------------------------------------------------------------------------------------------------------*/
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 IndiNyxDriver::~IndiNyxDriver()
 {
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     m_WorkerRunning = false;
 
     if(m_WorkerThread.joinable())  m_WorkerThread.join();
+
+    /*----------------------------------------------------------------------------------------------------------------*/
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -62,7 +76,7 @@ bool IndiNyxDriver::initProperties()
     /* INDI SETTINGS                                                                                                  */
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    IUFillText(&INDISettingsT[0], "INDI_URL",      "URL",      "");
+    IUFillText(&INDISettingsT[0], "INDI_URL", "URL", "tcp://localhost:7624");
     //FillText(&INDISettingsT[1], "INDI_USERNAME", "Username", "");
     //FillText(&INDISettingsT[2], "INDI_PASSWORD", "Password", "");
 
@@ -83,7 +97,7 @@ bool IndiNyxDriver::initProperties()
     /* MQTT SETTINGS                                                                                                  */
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    IUFillText(&MQTTSettingsT[0], "MQTT_URL",      "URL",      "");
+    IUFillText(&MQTTSettingsT[0], "MQTT_URL", "URL", "mqtt://localhost:1883");
     IUFillText(&MQTTSettingsT[1], "MQTT_USERNAME", "Username", "");
     IUFillText(&MQTTSettingsT[2], "MQTT_PASSWORD", "Password", "");
 
@@ -123,15 +137,6 @@ void IndiNyxDriver::ISGetProperties(const char *dev)
 
     loadConfig(true, MQTTSettingsTP.name);
     IDSetText(&MQTTSettingsTP, nullptr);
-
-    /*----------------------------------------------------------------------------------------------------------------*/
-
-    if(!m_WorkerRunning)
-    {
-        m_WorkerRunning = true;
-
-        m_WorkerThread = std::thread(&IndiNyxDriver::workerThreadFunc, this);
-    }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 }

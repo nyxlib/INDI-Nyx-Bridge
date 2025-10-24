@@ -11,22 +11,30 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static struct mg_mgr mgr;
-
-static struct mg_mqtt_opts mqtt_opts = {0};
-
-static struct mg_connection *indi_connection = NULL;
-static struct mg_connection *mqtt_connection = NULL;
+static struct mg_mgr m_mgr = {0};
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static const char *m_indi_url = "";
-static const char *m_indi_username = "";
-static const char *m_indi_password = "";
+static char *m_indi_url = NULL;
+static char *m_mqtt_url = NULL;
+static char *m_mqtt_user = NULL;
+static char *m_mqtt_pass = NULL;
 
-static const char *m_mqtt_url = "";
-static const char *m_mqtt_username = "";
-static const char *m_mqtt_password = "";
+static struct mg_mqtt_opts m_mqtt_opts = {0};
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+static struct mg_connection *m_indi_connection = NULL;
+static struct mg_connection *m_mqtt_connection = NULL;
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+static const char *nz(const char *s) { return s ? s : ""; }
+
+static int streq(const char *a, const char *b)
+{
+    return strcmp(nz(a), nz(b)) == 0;
+}
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -34,15 +42,15 @@ static void indi_handler(struct mg_connection *connection, int ev, void *ev_data
 {
     /**/ if(ev == MG_EV_OPEN)
     {
-        MG_INFO(("%lu INDI OPEN", connection->id));
+        MG_INFO(("%lu INDI OPEN (%s)", connection->id, m_indi_url));
 
-        indi_connection = connection;
+        m_indi_connection = connection;
     }
     else if(ev == MG_EV_CLOSE)
     {
         MG_INFO(("%lu INDI CLOSE", connection->id));
 
-        indi_connection = NULL;
+        m_indi_connection = NULL;
     }
     else if(ev == MG_EV_ERROR)
     {
@@ -60,15 +68,15 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
 {
     /**/ if(ev == MG_EV_OPEN)
     {
-        MG_INFO(("%lu MQTT OPEN", connection->id));
+        MG_INFO(("%lu MQTT OPEN (%s)", connection->id, m_mqtt_url));
 
-        mqtt_connection = connection;
+        m_mqtt_connection = connection;
     }
     else if(ev == MG_EV_CLOSE)
     {
         MG_INFO(("%lu MQTT CLOSE", connection->id));
 
-        mqtt_connection = NULL;
+        m_mqtt_connection = NULL;
     }
     else if(ev == MG_EV_ERROR)
     {
@@ -94,39 +102,32 @@ static void retry_timer_handler(void *arg)
     /* INDI                                                                                                           */
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(indi_connection == NULL && m_indi_url != NULL && m_indi_url[0] != '\0')
+    if(m_indi_connection == NULL && m_indi_url != NULL && m_indi_url[0] != '\0')
     {
-        indi_connection = mg_connect(
-            &mgr,
+        m_indi_connection = mg_connect(
+            &m_mgr,
             m_indi_url,
             indi_handler,
             NULL
         );
-
-        if(indi_connection != NULL)
-        {
-            MG_INFO(("Connecting to INDI..."));
-        }
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
     /* MQTT                                                                                                           */
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(mqtt_connection == NULL && m_mqtt_url != NULL && m_mqtt_url[0] != '\0')
+    if(m_mqtt_connection == NULL && m_mqtt_url != NULL && m_mqtt_url[0] != '\0')
     {
-        mqtt_connection = mg_mqtt_connect(
-            &mgr,
+        m_mqtt_opts.user = mg_str(nz(m_mqtt_user));
+        m_mqtt_opts.pass = mg_str(nz(m_mqtt_pass));
+
+        m_mqtt_connection = mg_mqtt_connect(
+            &m_mgr,
             m_mqtt_url,
-            &mqtt_opts,
+            &m_mqtt_opts,
             mqtt_handler,
             NULL
         );
-
-        if(mqtt_connection != NULL)
-        {
-            MG_INFO(("Connecting to MQTT..."));
-        }
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -142,18 +143,18 @@ void nyx_bridge_initialize()
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    mg_mgr_init(&mgr);
+    mg_mgr_init(&m_mgr);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    mqtt_opts.client_id = mg_str("$$");
+    m_mqtt_opts.client_id = mg_str("$$");
 
-    mqtt_opts.version = 0x04;
-    mqtt_opts.clean = true;
+    m_mqtt_opts.version = 0x04;
+    m_mqtt_opts.clean = true;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    mg_timer_add(&mgr, 1000, MG_TIMER_REPEAT | MG_TIMER_RUN_NOW, retry_timer_handler, NULL);
+    mg_timer_add(&m_mgr, 1000, MG_TIMER_REPEAT | MG_TIMER_RUN_NOW, retry_timer_handler, NULL);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 }
@@ -162,7 +163,12 @@ void nyx_bridge_initialize()
 
 void nyx_bridge_finalize()
 {
-    mg_mgr_free(&mgr);
+    mg_mgr_free(&m_mgr);
+
+    free(m_indi_url);
+    free(m_mqtt_url);
+    free(m_mqtt_user);
+    free(m_mqtt_pass);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -170,21 +176,55 @@ void nyx_bridge_finalize()
 void nyx_bridge_poll(
     const char *indi_url,
     const char *mqtt_url,
-    const char *mqtt_username,
-    const char *mqtt_password,
+    const char *mqtt_user,
+    const char *mqtt_pass,
     int ms
 ) {
     /*----------------------------------------------------------------------------------------------------------------*/
+    // tcp://localhost:7624
 
-    m_indi_url = indi_url;
-    m_mqtt_url = mqtt_url;
+    if(!streq(m_indi_url, indi_url))
+    {
+        free(m_indi_url);
 
-    mqtt_opts.user = mg_str(mqtt_username);
-    mqtt_opts.pass = mg_str(mqtt_password);
+        m_indi_url = strdup(nz(indi_url));
+
+        if(m_indi_connection != NULL)
+        {
+            //_disconnect(m_indi_connection, NULL);
+
+            m_indi_connection->is_closing = 1;
+        }
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+    // mqtt://localhost:1883
+
+    if(!streq(m_mqtt_url, mqtt_url)
+       ||
+       !streq(m_mqtt_user, mqtt_user)
+       ||
+       !streq(m_mqtt_pass, mqtt_pass)
+    ) {
+        free(m_mqtt_url);
+        free(m_mqtt_user);
+        free(m_mqtt_pass);
+
+        m_mqtt_url = strdup(nz(mqtt_url));
+        m_mqtt_user = strdup(nz(mqtt_user));
+        m_mqtt_pass = strdup(nz(mqtt_pass));
+
+        if(m_mqtt_connection != NULL)
+        {
+            mg_mqtt_disconnect(m_mqtt_connection, NULL);
+
+            m_mqtt_connection->is_closing = 1;
+        }
+    }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    mg_mgr_poll(&mgr, ms);
+    mg_mgr_poll(&m_mgr, ms);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 }

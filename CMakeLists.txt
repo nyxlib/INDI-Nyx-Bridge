@@ -34,10 +34,10 @@ find_package(INDI REQUIRED)
 #----------------------------------------------------------------------------------------------------------------------
 
 add_executable(indi_nyx
-    src/bridge.c
+    src/indi_nyx_driver.cpp
     src/external/mongoose.c
     src/logger.cpp
-    src/indi_nyx_driver.cpp
+    src/bridge.c
 )
 
 target_link_libraries(indi_nyx

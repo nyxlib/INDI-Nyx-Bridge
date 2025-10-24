@@ -11,14 +11,14 @@ MONGOOSE_VERSION = '7.19'
 ########################################################################################################################
 
 LOGGER = '''
-extern int mg_to_indi_log_level;
+extern int nyx_curr_log_level;
 
-void mg_to_indi_log_int(const char *fmt, ...);
+void nyx_log(const char *fmt, ...);
 
 #define MG_LOG(level, args)                         \\
             do {                                    \\
-                mg_to_indi_log_level = (level);     \\
-                mg_to_indi_log_int args;            \\
+                nyx_curr_log_level = (level);       \\
+                nyx_log args;                       \\
             } while(0)
 '''[1: ]
 
