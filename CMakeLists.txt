@@ -27,6 +27,8 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/")
 
 find_package(PkgConfig REQUIRED)
 
+find_package(LibXml2 REQUIRED)
+
 find_package(Threads REQUIRED)
 
 find_package(INDI REQUIRED)
@@ -44,6 +46,7 @@ add_executable(indi_nyx
 )
 
 target_link_libraries(indi_nyx
+    LibXml2::LibXml2
     Threads::Threads
     ${INDI_LIBRARIES}
 )
