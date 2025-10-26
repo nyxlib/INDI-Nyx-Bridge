@@ -45,23 +45,13 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
 
     int d = p->depth;
 
-    if(d == 0)
+    if(d != 0)
     {
-        /* racine factice <stream> */
-    }
-    else
-    {
-        /*----------------------------------------------*/
-        /* PRÉ-BLOC : ouverture tableau / virgules      */
-        /*----------------------------------------------*/
-
         if(d == 1)
         {
-            /* objet racine logique */
-            p->has_children = 0;
-            p->need_comma   = 0;
-
             nyx_string_builder_clear(p->sb);
+            p->has_children = 0;
+            p->need_comma = 0;
         }
         else if(d == 2)
         {
@@ -69,7 +59,7 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
             {
                 nyx_string_builder_append(p->sb, false, false, ",\"children\":[");
                 p->has_children = 1;
-                p->need_comma   = 0;
+                p->need_comma = 0;
             }
             else if(p->need_comma)
             {
@@ -77,25 +67,16 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
                 p->need_comma = 0;
             }
         }
-        else /* d > 2 */
+        else if(p->need_comma)
         {
-            if(p->need_comma)
-            {
-                nyx_string_builder_append(p->sb, false, false, ",");
-                p->need_comma = 0;
-            }
+            nyx_string_builder_append(p->sb, false, false, ",");
+            p->need_comma = 0;
         }
 
-        /*----------------------------------------------*/
-        /* BLOC COMMUN : début objet + "<>" + attributs */
-        /*----------------------------------------------*/
-
-        /* {"<>":"<name>" */
         nyx_string_builder_append(p->sb, false, false, "{\"<>\":\"");
-        nyx_string_builder_append(p->sb, true , false, (const char *) name);   /* échappé JSON */
+        nyx_string_builder_append(p->sb, true , false, (const char *) name);
         nyx_string_builder_append(p->sb, false, false, "\"");
 
-        /* attributs (clés/valeurs dynamiques, tous échappés JSON) */
         if(atts != NULL)
         {
             for(int i = 0; atts[i] && atts[i + 1]; i += 2)
@@ -110,10 +91,8 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
-    /* inline txt_clear(p, d)                                                                                         */
-    /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(!(d < 0x0000000000000000 || d >= NYX_X2J_MAX_DEPTH))
+    if(!(d < 0 || d >= NYX_X2J_MAX_DEPTH))
     {
         if(p->txt_sb[d] == NULL)
         {
@@ -152,44 +131,40 @@ static void sax_end(void *ud, const xmlChar *name __attribute__ ((unused)))
         return;
     }
 
-    /* texte accumulé */
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     if(d >= 0 && d < NYX_X2J_MAX_DEPTH && p->txt_has[d])
     {
         nyx_string_builder_append(p->sb, false, false, ",\"$\":\"");
-
         {
-            str_t t = nyx_string_builder_to_string(p->txt_sb[d]);   /* déjà échappé JSON */
+            str_t t = nyx_string_builder_to_string(p->txt_sb[d]);
             nyx_string_builder_append(p->sb, false, false, t);
             free(t);
         }
-
         nyx_string_builder_append(p->sb, false, false, "\"");
-
         p->txt_has[d] = 0;
         nyx_string_builder_clear(p->txt_sb[d]);
     }
 
-    /* fermeture + émission éventuelle */
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     if(d == 1)
     {
         if(p->has_children) nyx_string_builder_append(p->sb, false, false, "]");
-
         nyx_string_builder_append(p->sb, false, false, "}");
-
         if(p->emit != NULL)
         {
             str_t out = nyx_string_builder_to_string(p->sb);
             p->emit(strlen(out), out);
             free(out);
         }
-
         p->has_children = 0;
         p->need_comma   = 0;
     }
     else
     {
         nyx_string_builder_append(p->sb, false, false, "}");
-        p->need_comma = 1;  /* prépare la virgule du prochain sibling */
+        p->need_comma = 1;
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -208,14 +183,10 @@ static void sax_text(void *ud, const xmlChar *str, int len)
         return;
     }
 
-    /*----------------------------------------------------------------------------------------------------------------*/
-
     int idx = p->depth - 1;
 
-    if(idx < 0x0000000000000000
-       ||
-       idx >= NYX_X2J_MAX_DEPTH
-    ) {
+    if(idx < 0 || idx >= NYX_X2J_MAX_DEPTH)
+    {
         return;
     }
 
@@ -230,7 +201,6 @@ static void sax_text(void *ud, const xmlChar *str, int len)
     if(s <= e)
     {
         nyx_string_builder_append(p->txt_sb[idx], true, false, s);
-
         p->txt_has[idx] = 1;
     }
 
@@ -265,11 +235,8 @@ nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit)
     if(result->ctx != NULL)
     {
         xmlCtxtUseOptions(result->ctx, XML_PARSE_RECOVER | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
-
         result->sb = nyx_string_builder_new();
-
         result->emit = emit;
-
         return result;
     }
 
@@ -324,6 +291,5 @@ void nyx_x2j_feed(const nyx_x2j_ctx_t *ctx, size_t len, STR_t text)
         xmlParseChunk(ctx->ctx, text, (int) len, 0);
     }
 }
-
 
 /*--------------------------------------------------------------------------------------------------------------------*/
