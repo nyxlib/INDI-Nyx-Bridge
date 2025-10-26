@@ -5,8 +5,9 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-#include <string.h>
 #include <ctype.h>
+#include <string.h>
+
 #include <libxml/SAX2.h>
 
 #include "bridge.h"

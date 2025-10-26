@@ -58,7 +58,7 @@ static void x2j_emit(size_t len, STR_t json)
             .qos     = 1,
         };
 
-        MG_INFO(("%s", json));
+        //MG_INFO(("%s", json));
 
         mg_mqtt_pub(m_mqtt_connection, &pub);
     }
@@ -98,7 +98,7 @@ static void indi_handler(struct mg_connection *connection, int ev, void *ev_data
     }
     else if(ev == MG_EV_CONNECT)
     {
-        static STR_t hello = "<getProperties version=\"1.7\" />";
+        static STR_t hello = "<getProperties version=\"1.7\"/>";
 
         mg_send(
             connection,
@@ -110,7 +110,7 @@ static void indi_handler(struct mg_connection *connection, int ev, void *ev_data
     {
         if(connection->recv.len > 0)
         {
-            MG_INFO(("%.*s", connection->recv.len, connection->recv.buf));
+            //MG_INFO(("%.*s", connection->recv.len, connection->recv.buf));
 
             nyx_x2j_feed(m_x2j, connection->recv.len, (STR_t) connection->recv.buf);
 
@@ -141,8 +141,6 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
     }
     else if(ev == MG_EV_MQTT_OPEN)
     {
-        MG_INFO(("%lu MQTT OPEN", connection->id));
-
         struct mg_mqtt_opts opts = {
             .topic = mg_str("nyx/cmd/json"),
             .qos   = 1,
@@ -156,8 +154,8 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
 
         if(message->data.len > 0)
         {
-            //MG_INFO(("%.*s", message->data.len, message->data.buf));
-            //nyx_j2x_feed(m_j2x, message->data.len, message->data.buf);
+            MG_INFO(("%.*s", message->data.len, message->data.buf));
+            nyx_j2x_feed(m_j2x, message->data.len, message->data.buf);
         }
     }
 }
