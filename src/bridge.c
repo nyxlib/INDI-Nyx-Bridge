@@ -110,6 +110,8 @@ static void indi_handler(struct mg_connection *connection, int ev, void *ev_data
     {
         if(connection->recv.len > 0)
         {
+            MG_INFO(("%.*s", connection->recv.len, connection->recv.buf));
+
             nyx_x2j_feed(m_x2j, connection->recv.len, (STR_t) connection->recv.buf);
 
             mg_iobuf_del(&connection->recv, 0, connection->recv.len);
@@ -154,8 +156,8 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
 
         if(message->data.len > 0)
         {
-            MG_INFO(("%.*s", message->data.len, message->data.buf));
-            nyx_j2x_feed(m_j2x, message->data.len, message->data.buf);
+            //MG_INFO(("%.*s", message->data.len, message->data.buf));
+            //nyx_j2x_feed(m_j2x, message->data.len, message->data.buf);
         }
     }
 }

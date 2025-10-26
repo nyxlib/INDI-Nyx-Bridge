@@ -59,7 +59,6 @@ static inline void key_attr_name(struct mg_str k, const char **name, size_t *len
 static inline struct mg_str jget(struct mg_str json, const char *path)
 {
     int toklen = 0;
-
     int off = mg_json_get(json, path, &toklen);
 
     return off < 0 ? (struct mg_str){.buf = NULL, .len = 0}
@@ -87,7 +86,7 @@ static str_t json_string_to_cstr(struct mg_str js)
 
         if(w == 0)
         {
-            /* fallback: copie brute de l'intérieur si unescape échoue */
+            /* fallback: copie brute si unescape échoue */
             memcpy(buf, inner.buf, inner.len);
             buf[inner.len] = 0;
         }
@@ -131,7 +130,7 @@ static void j2x_emit_children(nyx_string_builder_t *out, struct mg_str arr)
 static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
-    /* "<>"                                                                                                           */
+    /* "<>" (nom de balise)                                                                                           */
     /*----------------------------------------------------------------------------------------------------------------*/
 
     struct mg_str tag_js = jget(obj, "$.<>");
@@ -146,7 +145,7 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
     /* OUVERTURE + ATTRIBUTS                                                                                          */
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    nyx_string_builder_append(out, "<", tag);
+    nyx_string_builder_append(out, false, false, "<", tag);
 
     size_t off = 0;
 
@@ -182,9 +181,9 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
                     memcpy(name, an, al);
                     name[al] = 0;
 
-                    nyx_string_builder_append(out, " ", name, "=\"");
-                    nyx_string_builder_append_xml(out, av);
-                    nyx_string_builder_append(out, "\"");
+                    nyx_string_builder_append(out, false, false, " ", name, "=\"");
+                    nyx_string_builder_append(out, false, true , av);   /* xml=true pour échapper &,<,>,",\' */
+                    nyx_string_builder_append(out, false, false, "\"");
 
                     free(name);
                 }
@@ -198,6 +197,7 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
     /* TEXTE + ENFANTS                                                                                                */
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    /* clé "$" → $.\"$\" dans mg_json_get */
     struct mg_str text_js = jget(obj, "$.\"$\"");
     struct mg_str kids_js = jget(obj, "$.children");
 
@@ -206,12 +206,12 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 
     if(!has_text && !has_kids)
     {
-        nyx_string_builder_append(out, "/>");
+        nyx_string_builder_append(out, false, false, "/>");
         free(tag);
         return;
     }
 
-    nyx_string_builder_append(out, ">");
+    nyx_string_builder_append(out, false, false, ">");
 
     if(has_text)
     {
@@ -219,7 +219,7 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 
         if(tv != NULL)
         {
-            nyx_string_builder_append_xml(out, tv);
+            nyx_string_builder_append(out, false, true, tv);   /* xml=true dans le contenu texte */
             free(tv);
         }
     }
@@ -229,7 +229,7 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
         j2x_emit_children(out, kids_js);
     }
 
-    nyx_string_builder_append(out, "</", tag, ">");
+    nyx_string_builder_append(out, false, false, "</", tag, ">");
 
     free(tag);
 }
@@ -266,15 +266,14 @@ void nyx_j2x_feed(nyx_j2x_ctx_t *ctx, size_t len, STR_t text)
 
     struct mg_str in = { .buf = (char *) text, .len = len };
 
-    struct mg_str have = jget(in, "$.<>");
-
-    if(have.len == 0) return;
+    /* présence du tag racine requis */
+    if(jget(in, "$.<>").len == 0) return;
 
     nyx_string_builder_t *sb = nyx_string_builder_new();
 
     j2x_emit_element(sb, in);
 
-    str_t xml = nyx_string_builder_to_cstring(sb);
+    str_t xml = nyx_string_builder_to_string(sb);   /* pas de _cstring dans la nouvelle API */
 
     if(ctx->emit != NULL && xml != NULL)
     {
