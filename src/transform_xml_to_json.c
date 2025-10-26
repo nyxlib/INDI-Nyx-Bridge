@@ -53,6 +53,8 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
 
     int d = p->depth;
 
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     if(d != 0)
     {
         /**/ if(d == 1)
@@ -63,7 +65,7 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
         }
         else if(d == 2)
         {
-            if(!p->has_children)
+            /**/ if(!p->has_children)
             {
                 nyx_string_builder_append(p->sb, false, false, ",\"children\":[");
                 p->has_children = 1;
@@ -102,14 +104,13 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
 
     if(!(d < 0 || d >= NYX_X2J_MAX_DEPTH))
     {
-        if(p->txt_sb[d] == NULL)
-        {
+        if(p->txt_sb[d] == NULL) {
             p->txt_sb[d] = nyx_string_builder_new();
         }
-        else
-        {
+        else {
             nyx_string_builder_clear(p->txt_sb[d]);
         }
+
         p->txt_has[d] = 0;
     }
 
@@ -130,46 +131,58 @@ static void sax_end(void *ud, const xmlChar *name __attribute__ ((unused)))
 
     p->depth--;
 
-    if(p->depth < 0) p->depth = 0;
+    if(p->depth < 0)
+    {
+        p->depth = 0;
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
 
     int d = p->depth;
 
-    if(d == 0)
-    {
-        return;
-    }
-
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(d >= 0 && d < NYX_X2J_MAX_DEPTH && p->txt_has[d])
-    {
-        nyx_string_builder_append(p->sb, false, false, ",\"$\":\"");
+    if(d >= 0x00000000000000
+       &&
+       d < NYX_X2J_MAX_DEPTH
+    ) {
+        if(p->txt_has[d])
         {
-            str_t t = nyx_string_builder_to_string(p->txt_sb[d]);
-            nyx_string_builder_append(p->sb, false, false, t);
-            free(t);
+            str_t s = nyx_string_builder_to_string(p->txt_sb[d]);
+            nyx_string_builder_clear(p->txt_sb[d]);
+
+            nyx_string_builder_append(p->sb, false, false, ",\"$\":\"");
+            nyx_string_builder_append(p->sb, true, false, s);
+            nyx_string_builder_append(p->sb, false, false, "\"");
+
+            p->txt_has[d] = 0;
+
+            free(s);
         }
-        nyx_string_builder_append(p->sb, false, false, "\"");
-        p->txt_has[d] = 0;
-        nyx_string_builder_clear(p->txt_sb[d]);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(d == 1)
+    /**/ if(d == 1)
     {
-        if(p->has_children) nyx_string_builder_append(p->sb, false, false, "]");
+        if(p->has_children)
+        {
+            nyx_string_builder_append(p->sb, false, false, "]");
+        }
+
         nyx_string_builder_append(p->sb, false, false, "}");
+
         if(p->emit != NULL)
         {
             str_t out = nyx_string_builder_to_string(p->sb);
             p->emit(strlen(out), out);
             free(out);
         }
+
         p->has_children = 0;
-        p->need_comma   = 0;
+        p->need_comma = 0;
     }
-    else
+    else if(d > 1)
     {
         nyx_string_builder_append(p->sb, false, false, "}");
         p->need_comma = 1;
@@ -193,8 +206,10 @@ static void sax_text(void *ud, const xmlChar *str, int len)
 
     int idx = p->depth - 1;
 
-    if(idx < 0 || idx >= NYX_X2J_MAX_DEPTH)
-    {
+    if(idx < 0x0000000000000000
+       ||
+       idx >= NYX_X2J_MAX_DEPTH
+    ) {
         return;
     }
 
@@ -209,6 +224,7 @@ static void sax_text(void *ud, const xmlChar *str, int len)
     if(s <= e)
     {
         nyx_string_builder_append(p->txt_sb[idx], true, false, s);
+
         p->txt_has[idx] = 1;
     }
 
@@ -243,8 +259,11 @@ nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit)
     if(result->ctx != NULL)
     {
         xmlCtxtUseOptions(result->ctx, XML_PARSE_RECOVER | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
+
         result->sb = nyx_string_builder_new();
+
         result->emit = emit;
+
         return result;
     }
 
@@ -294,7 +313,7 @@ void nyx_x2j_close(nyx_x2j_ctx_t *ctx)
 
 void nyx_x2j_feed(const nyx_x2j_ctx_t *ctx, size_t len, STR_t text)
 {
-    if(ctx->ctx != NULL && len > 0 && text != NULL)
+    if(ctx->ctx != NULL && len > 0x00 && text != NULL)
     {
         xmlParseChunk(ctx->ctx, text, (int) len, 0);
     }
