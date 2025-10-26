@@ -47,7 +47,7 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
 
     if(d != 0)
     {
-        if(d == 1)
+        /**/ if(d == 1)
         {
             nyx_string_builder_clear(p->sb);
             p->has_children = 0;
@@ -74,17 +74,17 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
         }
 
         nyx_string_builder_append(p->sb, false, false, "{\"<>\":\"");
-        nyx_string_builder_append(p->sb, true , false, (const char *) name);
+        nyx_string_builder_append(p->sb, true , false, (STR_t) name);
         nyx_string_builder_append(p->sb, false, false, "\"");
 
         if(atts != NULL)
         {
-            for(int i = 0; atts[i] && atts[i + 1]; i += 2)
+            for(int i = 0; atts[i + 0] != NULL && atts[i + 1] != NULL; i += 2)
             {
                 nyx_string_builder_append(p->sb, false, false, ",\"@");
-                nyx_string_builder_append(p->sb, true , false, (const char *) atts[i]);
+                nyx_string_builder_append(p->sb, true , false, (STR_t) atts[i + 0]);
                 nyx_string_builder_append(p->sb, false, false, "\":\"");
-                nyx_string_builder_append(p->sb, true , false, (const char *) atts[i + 1]);
+                nyx_string_builder_append(p->sb, true , false, (STR_t) atts[i + 1]);
                 nyx_string_builder_append(p->sb, false, false, "\"");
             }
         }
