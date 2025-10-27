@@ -106,7 +106,7 @@ __skip:
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static void sax_end(void *ud, const xmlChar *name __attribute__ ((unused)))
+static void sax_end(void *ud, __attribute__ ((unused)) const xmlChar *name)
 {
     nyx_x2j_ctx_t *p = ud;
 
