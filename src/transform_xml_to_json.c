@@ -7,6 +7,7 @@
 
 #include <ctype.h>
 #include <string.h>
+#include <stdbool.h>
 
 #include <libxml/SAX2.h>
 
@@ -26,14 +27,17 @@ struct nyx_x2j_ctx_s
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    int depth;
     nyx_string_builder_t *sb;
 
-    nyx_string_builder_t *txt_sb[NYX_X2J_MAX_DEPTH];
-    unsigned char txt_has[NYX_X2J_MAX_DEPTH];
+    int text_depth;
+    nyx_string_builder_t *txt_sb;
 
-    int has_children;
-    int need_comma;
-    int depth;
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    bool has_children;
+    bool has_text;
+    bool comma;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -56,59 +60,63 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(d != 0)
+    /**/ if(d == 1)
     {
-        /**/ if(d == 1)
+        nyx_string_builder_clear(p->sb);
+        p->has_children = false;
+        p->comma = false;
+    }
+    else if(d == 2)
+    {
+        if(!p->has_children)
         {
-            nyx_string_builder_clear(p->sb);
-            p->has_children = 0;
-            p->need_comma = 0;
-        }
-        else
-        {
-            if(d == 2 && !p->has_children)
-            {
-                nyx_string_builder_append(p->sb, false, false, ",\"children\":[");
-                p->has_children = 1;
-            }
-
-            if(d >= 2 && p->need_comma)
-            {
-                nyx_string_builder_append(p->sb, false, false, ",");
-                p->need_comma = 0;
-            }
+            nyx_string_builder_append(p->sb, false, false, ",\"children\":[");
+            p->has_children = true;
         }
 
-        nyx_string_builder_append(p->sb, false, false, "{\"<>\":\"");
-        nyx_string_builder_append(p->sb, true , false, (STR_t) name);
-        nyx_string_builder_append(p->sb, false, false, "\"");
-
-        if(atts != NULL)
+        if(p->comma)
         {
-            for(int i = 0; atts[i + 0] != NULL && atts[i + 1] != NULL; i += 2)
-            {
-                nyx_string_builder_append(p->sb, false, false, ",\"@");
-                nyx_string_builder_append(p->sb, true , false, (STR_t) atts[i + 0]);
-                nyx_string_builder_append(p->sb, false, false, "\":\"");
-                nyx_string_builder_append(p->sb, true , false, (STR_t) atts[i + 1]);
-                nyx_string_builder_append(p->sb, false, false, "\"");
-            }
+            nyx_string_builder_append(p->sb, false, false, ",");
+            p->comma = false;
+        }
+    }
+    else
+    {
+        goto __skip;
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    nyx_string_builder_append(p->sb, false, false, "{\"<>\":\"");
+    nyx_string_builder_append(p->sb, true , false, (STR_t) name);
+    nyx_string_builder_append(p->sb, false, false, "\"");
+
+    if(atts != NULL)
+    {
+        for(int i = 0; atts[i + 0] != NULL && atts[i + 1] != NULL; i += 2)
+        {
+            nyx_string_builder_append(p->sb, false, false, ",\"@");
+            nyx_string_builder_append(p->sb, true , false, (STR_t) atts[i + 0]);
+            nyx_string_builder_append(p->sb, false, false, "\":\"");
+            nyx_string_builder_append(p->sb, true , false, (STR_t) atts[i + 1]);
+            nyx_string_builder_append(p->sb, false, false, "\"");
         }
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(!(d < 0 || d >= NYX_X2J_MAX_DEPTH))
+__skip:
+    if(p->txt_sb == NULL)
     {
-        if(p->txt_sb[d] == NULL) {
-            p->txt_sb[d] = nyx_string_builder_new();
-        }
-        else {
-            nyx_string_builder_clear(p->txt_sb[d]);
-        }
-
-        p->txt_has[d] = 0;
+        p->txt_sb = nyx_string_builder_new();
     }
+    else
+    {
+        nyx_string_builder_clear(p->txt_sb);
+    }
+
+    p->has_text = false;
+    p->text_depth = d;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -138,23 +146,18 @@ static void sax_end(void *ud, const xmlChar *name __attribute__ ((unused)))
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(d >= 0x00000000000000
-       &&
-       d < NYX_X2J_MAX_DEPTH
-    ) {
-        if(p->txt_has[d])
-        {
-            str_t s = nyx_string_builder_to_string(p->txt_sb[d]);
-            nyx_string_builder_clear(p->txt_sb[d]);
+    if(p->has_text && p->text_depth == d)
+    {
+        str_t s = nyx_string_builder_to_string(p->txt_sb);
+        nyx_string_builder_clear(p->txt_sb);
 
-            nyx_string_builder_append(p->sb, false, false, ",\"$\":\"");
-            nyx_string_builder_append(p->sb, true, false, s);
-            nyx_string_builder_append(p->sb, false, false, "\"");
+        nyx_string_builder_append(p->sb, false, false, ",\"$\":\"");
+        nyx_string_builder_append(p->sb, true, false, s);
+        nyx_string_builder_append(p->sb, false, false, "\"");
 
-            p->txt_has[d] = 0;
+        p->has_text = false;
 
-            free(s);
-        }
+        free(s);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -175,13 +178,13 @@ static void sax_end(void *ud, const xmlChar *name __attribute__ ((unused)))
             free(out);
         }
 
-        p->has_children = 0;
-        p->need_comma = 0;
+        p->has_children = false;
+        p->comma = false;
     }
-    else if(d > 1)
+    else if(d == 2)
     {
         nyx_string_builder_append(p->sb, false, false, "}");
-        p->need_comma = 1;
+        p->comma = true;
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -202,10 +205,8 @@ static void sax_text(void *ud, const xmlChar *str, int len)
 
     int idx = p->depth - 1;
 
-    if(idx < 0x0000000000000000
-       ||
-       idx >= NYX_X2J_MAX_DEPTH
-    ) {
+    if(idx != p->text_depth)
+    {
         return;
     }
 
@@ -219,9 +220,8 @@ static void sax_text(void *ud, const xmlChar *str, int len)
 
     if(s <= e)
     {
-        nyx_string_builder_append(p->txt_sb[idx], true, false, s);
-
-        p->txt_has[idx] = 1;
+        nyx_string_builder_append(p->txt_sb, true, false, s);
+        p->has_text = true;
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -292,12 +292,9 @@ void nyx_x2j_close(nyx_x2j_ctx_t *ctx)
         nyx_string_builder_free(ctx->sb);
     }
 
-    for(int i = 0; i < NYX_X2J_MAX_DEPTH; i++)
+    if(ctx->txt_sb != NULL)
     {
-        if(ctx->txt_sb[i] != NULL)
-        {
-            nyx_string_builder_free(ctx->txt_sb[i]);
-        }
+        nyx_string_builder_free(ctx->txt_sb);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
