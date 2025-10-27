@@ -1,4 +1,4 @@
-/* INDI→Nyx JSON Streamer (XML→JSON)
+/* INDI-Nyx Driver
  * Author: Jérôme ODIER <jerome.odier@lpsc.in2p3.fr>
  * SPDX-License-Identifier: GPL-2.0-only
  */
