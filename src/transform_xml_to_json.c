@@ -106,19 +106,18 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
     /*----------------------------------------------------------------------------------------------------------------*/
 
 __skip:
-    if(p->txt_sb == NULL)
-    {
-        p->txt_sb = nyx_string_builder_new();
-    }
-    else
-    {
+    if(p->txt_sb != NULL) {
         nyx_string_builder_clear(p->txt_sb);
+    }
+    else {
+        p->txt_sb = nyx_string_builder_new();
     }
 
     p->has_text = false;
-    p->text_depth = d;
 
     /*----------------------------------------------------------------------------------------------------------------*/
+
+    p->text_depth = d;
 
     p->depth++;
 
