@@ -35,7 +35,7 @@ struct nyx_x2j_ctx_s
 
     int children_cnt;
 
-    nyx_x2j_emit_fn emit;
+    nyx_x2j_emit_fn emit_fn;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 };
@@ -154,10 +154,10 @@ static void sax_end(void *ud, const xmlChar *name __attribute__ ((unused)))
 
         /**/
 
-        if(p->emit != NULL)
+        if(p->emit_fn != NULL)
         {
             str_t out = nyx_string_builder_to_string(p->sb);
-            p->emit(strlen(out), out);
+            p->emit_fn(strlen(out), out);
             free(out);
         }
     }
@@ -240,7 +240,7 @@ nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    result->emit = emit;
+    result->emit_fn = emit;
 
     result->sb = nyx_string_builder_new();
 
