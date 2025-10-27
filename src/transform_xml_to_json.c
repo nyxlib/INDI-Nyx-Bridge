@@ -64,24 +64,19 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
             p->has_children = 0;
             p->need_comma = 0;
         }
-        else if(d == 2)
+        else
         {
-            /**/ if(!p->has_children)
+            if(d == 2 && !p->has_children)
             {
                 nyx_string_builder_append(p->sb, false, false, ",\"children\":[");
                 p->has_children = 1;
-                p->need_comma = 0;
             }
-            else if(p->need_comma)
+
+            if(d >= 2 && p->need_comma)
             {
                 nyx_string_builder_append(p->sb, false, false, ",");
                 p->need_comma = 0;
             }
-        }
-        else if(p->need_comma)
-        {
-            nyx_string_builder_append(p->sb, false, false, ",");
-            p->need_comma = 0;
         }
 
         nyx_string_builder_append(p->sb, false, false, "{\"<>\":\"");
@@ -272,9 +267,9 @@ nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit)
 
     free(result);
 
-    return NULL;
-
     /*----------------------------------------------------------------------------------------------------------------*/
+
+    return NULL;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -292,7 +287,7 @@ void nyx_x2j_close(nyx_x2j_ctx_t *ctx)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(ctx->sb)
+    if(ctx->sb != NULL)
     {
         nyx_string_builder_free(ctx->sb);
     }
