@@ -27,6 +27,10 @@ struct nyx_x2j_ctx_s
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    nyx_x2j_emit_fn emit;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     int depth;
     nyx_string_builder_t *sb;
 
@@ -38,10 +42,6 @@ struct nyx_x2j_ctx_s
     bool has_children;
     bool has_text;
     bool comma;
-
-    /*----------------------------------------------------------------------------------------------------------------*/
-
-    nyx_x2j_emit_fn emit;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 };
@@ -106,18 +106,11 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
     /*----------------------------------------------------------------------------------------------------------------*/
 
 __skip:
-    if(p->txt_sb != NULL) {
-        nyx_string_builder_clear(p->txt_sb);
-    }
-    else {
-        p->txt_sb = nyx_string_builder_new();
-    }
-
+    nyx_string_builder_clear(p->txt_sb);
     p->has_text = false;
+    p->text_depth = d;
 
     /*----------------------------------------------------------------------------------------------------------------*/
-
-    p->text_depth = d;
 
     p->depth++;
 
@@ -255,9 +248,11 @@ nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit)
     {
         xmlCtxtUseOptions(result->ctx, XML_PARSE_RECOVER | XML_PARSE_NOERROR | XML_PARSE_NOWARNING);
 
+        result->emit = emit;
+
         result->sb = nyx_string_builder_new();
 
-        result->emit = emit;
+        result->txt_sb = nyx_string_builder_new();
 
         return result;
     }
@@ -286,13 +281,11 @@ void nyx_x2j_close(nyx_x2j_ctx_t *ctx)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(ctx->sb != NULL)
-    {
+    if(ctx->sb != NULL) {
         nyx_string_builder_free(ctx->sb);
     }
 
-    if(ctx->txt_sb != NULL)
-    {
+    if(ctx->txt_sb != NULL) {
         nyx_string_builder_free(ctx->txt_sb);
     }
 
