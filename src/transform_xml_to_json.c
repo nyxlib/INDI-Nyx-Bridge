@@ -184,7 +184,7 @@ static void sax_end(void *ud, const xmlChar *name __attribute__ ((unused)))
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static void sax_text(void *ud, const xmlChar *str, int len)
+static void sax_txt(void *ud, const xmlChar *str, int len)
 {
     nyx_x2j_ctx_t *p = ud;
 
@@ -221,11 +221,11 @@ static void sax_text(void *ud, const xmlChar *str, int len)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static xmlSAXHandler g_sax = {
+static xmlSAXHandler sax = {
     .initialized  = XML_SAX2_MAGIC,
     .startElement = sax_start,
     .endElement   = sax_end,
-    .characters   = sax_text,
+    .characters   = sax_txt,
 };
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -242,7 +242,7 @@ nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    result->ctx = xmlCreatePushParserCtxt(&g_sax, result, "<stream>", 8, NULL);
+    result->ctx = xmlCreatePushParserCtxt(&sax, result, "<stream>", 8, NULL);
 
     if(result->ctx != NULL)
     {
