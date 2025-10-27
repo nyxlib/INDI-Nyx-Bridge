@@ -42,6 +42,8 @@ static nyx_j2x_ctx_t *m_j2x = NULL;
 
 static STR_t nz(STR_t s) { return s ? s : ""; }
 
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 static int streq(STR_t a, STR_t b)
 {
     return strcmp(nz(a), nz(b)) == 0;
