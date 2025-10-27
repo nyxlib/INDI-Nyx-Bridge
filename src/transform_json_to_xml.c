@@ -98,29 +98,27 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
     struct mg_str k, v;
     size_t off;
 
-    struct mg_str tag_js = (struct mg_str){0};
-    struct mg_str text_js = (struct mg_str){0};
-    struct mg_str kids_js = (struct mg_str){0};
+    struct mg_str tag_js  = (struct mg_str) {0};
+    struct mg_str text_js = (struct mg_str) {0};
+    struct mg_str kids_js = (struct mg_str) {0};
 
-    /*----------------------------------------------------------------------------------------------------------------*/
-    /* PREMIÈRE PASSE: EXTRACTION DES CLÉS SPÉCIALES                                                                  */
     /*----------------------------------------------------------------------------------------------------------------*/
 
     off = 0;
     while((off = mg_json_next(obj, off, &k, &v)) != 0)
     {
-        if(key_eq(k, "<>")) { tag_js = v; }
-        else if(key_is_dollar(k)) { text_js = v; }
-        else if(key_eq(k, "children")) { kids_js = v; }
+        if(key_eq(k, "<>")) tag_js = v;
+        else if(key_is_dollar(k)) text_js = v;
+        else if(key_eq(k, "children")) kids_js = v;
     }
 
     if(tag_js.len == 0) return;
 
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     str_t tag = json_string_to_cstr(tag_js);
     if(tag == NULL) return;
 
-    /*----------------------------------------------------------------------------------------------------------------*/
-    /* OUVERTURE BALISE + ATTRIBUTS                                                                                   */
     /*----------------------------------------------------------------------------------------------------------------*/
 
     nyx_string_builder_append(out, false, false, "<", tag);
@@ -135,44 +133,41 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 
             key_attr_name(k, &an, &al);
 
-            str_t av = json_string_to_cstr(v);
-            if(av != NULL)
+            char  sbuf[128];
+            char *name = NULL;
+
+            if(al < sizeof(sbuf))
             {
-                char sbuf[128];
-                char *name = NULL;
-
-                if(al < sizeof(sbuf))
-                {
-                    memcpy(sbuf, an, al);
-                    sbuf[al] = 0;
-                    name = sbuf;
-                }
-                else
-                {
-                    name = (char *) malloc(al + 1);
-                    if(name != NULL)
-                    {
-                        memcpy(name, an, al);
-                        name[al] = 0;
-                    }
-                }
-
+                memcpy(sbuf, an, al);
+                sbuf[al] = 0;
+                name = sbuf;
+            }
+            else
+            {
+                name = (char *) malloc(al + 1);
                 if(name != NULL)
+                {
+                    memcpy(name, an, al);
+                    name[al] = 0;
+                }
+            }
+
+            if(name != NULL)
+            {
+                str_t av = json_string_to_cstr(v);
+                if(av != NULL)
                 {
                     nyx_string_builder_append(out, false, false, " ", name, "=\"");
                     nyx_string_builder_append(out, false, true , av);
                     nyx_string_builder_append(out, false, false, "\"");
-
-                    if(name != sbuf) free(name);
+                    free(av);
                 }
 
-                free(av);
+                if(name != sbuf) free(name);
             }
         }
     }
 
-    /*----------------------------------------------------------------------------------------------------------------*/
-    /* CONTENU TEXTE + ENFANTS                                                                                        */
     /*----------------------------------------------------------------------------------------------------------------*/
 
     int has_text = (text_js.len > 0);

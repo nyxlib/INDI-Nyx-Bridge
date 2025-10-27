@@ -29,9 +29,9 @@ static struct mg_connection *m_mqtt_connection = NULL;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static STR_t MQTT_TOPIC_IN  = "nyx/cmd/json";
+#define MQTT_TOPIC_IN "nyx/cmd/json"
 
-static STR_t MQTT_TOPIC_OUT = "nyx/json";
+#define MQTT_TOPIC_OUT "nyx/json"
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -142,7 +142,7 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
     else if(ev == MG_EV_MQTT_OPEN)
     {
         struct mg_mqtt_opts opts = {
-            .topic = mg_str("nyx/cmd/json"),
+            .topic = mg_str(MQTT_TOPIC_IN),
             .qos   = 1,
         };
 
