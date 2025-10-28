@@ -213,7 +213,7 @@ void nyx_j2x_close(nyx_j2x_ctx_t *ctx)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void nyx_j2x_feed(nyx_j2x_ctx_t *ctx, size_t len, STR_t text)
+void nyx_j2x_feed(const nyx_j2x_ctx_t *ctx, size_t len, STR_t text)
 {
     if(ctx->emit_fn != NULL && len > 0x00 && text != NULL)
     {

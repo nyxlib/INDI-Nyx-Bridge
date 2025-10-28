@@ -156,14 +156,14 @@ nyx_j2x_ctx_t *nyx_j2x_init(
     nyx_x2j_emit_fn emit_fn
 );
 
-void nyx_j2x_feed(
-    nyx_j2x_ctx_t *ctx,
-    size_t len,
-    STR_t text
-);
-
 void nyx_j2x_close(
     nyx_j2x_ctx_t *ctx
+);
+
+void nyx_j2x_feed(
+    const nyx_j2x_ctx_t *ctx,
+    size_t len,
+    STR_t text
 );
 
 /*--------------------------------------------------------------------------------------------------------------------*/
