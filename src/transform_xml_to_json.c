@@ -213,7 +213,7 @@ static xmlSAXHandler sax = {
 /* API                                                                                                                */
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit)
+nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit_fn)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -238,7 +238,7 @@ nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    result->emit_fn = emit;
+    result->emit_fn = emit_fn;
 
     result->sb = nyx_string_builder_new();
 
@@ -281,7 +281,7 @@ void nyx_x2j_close(nyx_x2j_ctx_t *ctx)
 
 void nyx_x2j_feed(const nyx_x2j_ctx_t *ctx, size_t len, STR_t text)
 {
-    if(ctx->ctx != NULL && len > 0x00 && text != NULL)
+    if(ctx->emit_fn != NULL && len > 0x00 && text != NULL)
     {
         xmlParseChunk(ctx->ctx, text, (int) len, 0);
     }

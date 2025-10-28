@@ -70,8 +70,6 @@ static void j2x_emit(size_t len, STR_t xml)
 {
     if(m_indi_connection != NULL && len > 0 && xml != NULL)
     {
-        MG_INFO(("%s", xml));
-
         mg_send(m_indi_connection, xml, len);
     }
 }
@@ -152,8 +150,6 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
 
         if(message->data.len > 0)
         {
-            MG_INFO(("%.*s", message->data.len, message->data.buf));
-
             nyx_j2x_feed(m_j2x, message->data.len, message->data.buf);
         }
     }

@@ -193,13 +193,13 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 /* API                                                                                                                */
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-nyx_j2x_ctx_t *nyx_j2x_init(nyx_j2x_emit_fn emit)
+nyx_j2x_ctx_t *nyx_j2x_init(nyx_j2x_emit_fn emit_fn)
 {
     nyx_j2x_ctx_t *ctx = malloc(sizeof(nyx_j2x_ctx_t));
 
     memset(ctx, 0x00, sizeof(*ctx));
 
-    ctx->emit_fn = emit;
+    ctx->emit_fn = emit_fn;
 
     return ctx;
 }
@@ -215,24 +215,18 @@ void nyx_j2x_close(nyx_j2x_ctx_t *ctx)
 
 void nyx_j2x_feed(nyx_j2x_ctx_t *ctx, size_t len, STR_t text)
 {
-    if(ctx == NULL || text == NULL || len == 0) return;
-
-    struct mg_str in = mg_str_n((str_t) text, len);
-
-    nyx_string_builder_t *sb = nyx_string_builder_new();
-
-    j2x_emit_element(sb, in);
-
-    str_t xml = nyx_string_builder_to_string(sb);
-
-    if(ctx->emit_fn != NULL)
+    if(ctx->emit_fn != NULL && len > 0x00 && text != NULL)
     {
+        nyx_string_builder_t *sb = nyx_string_builder_new();
+
+        j2x_emit_element(sb, mg_str_n(text, len));
+
+        str_t xml = nyx_string_builder_to_string(sb);
         ctx->emit_fn(strlen(xml), xml);
+        free(xml);
+
+        nyx_string_builder_free(sb);
     }
-
-    free(xml);
-
-    nyx_string_builder_free(sb);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

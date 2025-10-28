@@ -127,7 +127,7 @@ typedef struct nyx_x2j_ctx_s nyx_x2j_ctx_t;
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 nyx_x2j_ctx_t *nyx_x2j_init(
-    nyx_x2j_emit_fn emit
+    nyx_x2j_emit_fn emit_fn
 );
 
 void nyx_x2j_close(
@@ -153,7 +153,7 @@ typedef struct nyx_j2x_ctx_s nyx_j2x_ctx_t;
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 nyx_j2x_ctx_t *nyx_j2x_init(
-    nyx_x2j_emit_fn emit
+    nyx_x2j_emit_fn emit_fn
 );
 
 void nyx_j2x_feed(
