@@ -7,7 +7,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;
 <a href="https://www.univ-grenoble-alpes.fr/" target="_blank"><img src="https://raw.githubusercontent.com/nyxlib/nyx-node/refs/heads/main/docs/img//logo_uga.svg" alt="UGA" height="72" /></a>
 
-# Nyx Node
+# INDI ↔ Nyx Bridge
 
 The `Nyx` project introduces a protocol, backward-compatible with [INDI 1.7](docs/specs/INDI.pdf), for controlling
 astronomical hardware. It enhances INDI by supporting multiple independent nodes, each with its own embedded protocol
