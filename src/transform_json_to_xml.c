@@ -114,7 +114,7 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
     {
         /*--*/ if(tag_str.len == 0 && key_eq(k, "<>")) {
             tag_str = v;
-        } else if(txt_str.len == 0 && key_eq(k, ("$"))) {
+        } else if(txt_str.len == 0 && key_eq(k, /**/"$"/**/)) {
             txt_str = v;
         } else if(kids_str.len == 0 && key_eq(k, "children")) {
             kids_str = v;
