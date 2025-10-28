@@ -14,6 +14,8 @@
 
 typedef struct nyx_string_builder_node_s
 {
+    size_t len;
+
     bool json;
     bool xml;
 
@@ -79,49 +81,53 @@ void nyx_string_builder_clear(nyx_string_builder_t *sb)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+void nyx_string_builder_append_buff(nyx_string_builder_t *sb, size_t len, STR_t str, bool json, bool xml)
+{
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    node_t *node = malloc(sizeof(node_t) + len + 1);
+
+    memcpy((str_t) (node + 1), str, len);
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    node->len = len;
+    node->json = json;
+    node->xml = xml;
+    node->next = NULL;
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
+    if(sb->head == NULL)
+    {
+        sb->head = node;
+        sb->tail = node;
+    }
+    else
+    {
+        sb->tail->next = node;
+        sb->tail /*-*/ = node;
+    }
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void nyx_string_builder_append_n(nyx_string_builder_t *sb, STR_t args[], size_t n, bool json, bool xml)
 {
     for(size_t i = 0; i < n; i++)
     {
-        /*------------------------------------------------------------------------------------------------------------*/
+        STR_t str = args[i];
 
-        STR_t data = args[i];
-
-        /*------------------------------------------------------------------------------------------------------------*/
-
-        node_t *node;
-
-        if(data == NULL)
+        if(str == NULL)
         {
-            node = malloc(sizeof(node_t) + 0x00000000000006 + 1);
-
-            strcpy((str_t) (node + 1), "(null)");
+            nyx_string_builder_append_buff(sb, 6, "(null)", false, false);
         }
         else
         {
-            node = malloc(sizeof(node_t) + strlen(data) + 1);
-
-            strcpy((str_t) (node + 1), data);
+            nyx_string_builder_append_buff(sb, strlen(str), str, json, xml);
         }
-
-        node->json = json;
-        node->xml = xml;
-        node->next = NULL;
-
-        /*------------------------------------------------------------------------------------------------------------*/
-
-        if(sb->head == NULL)
-        {
-            sb->head = node;
-            sb->tail = node;
-        }
-        else
-        {
-            sb->tail->next = node;
-            sb->tail /*-*/ = node;
-        }
-
-        /*------------------------------------------------------------------------------------------------------------*/
     }
 }
 
@@ -137,7 +143,7 @@ size_t nyx_string_builder_length(const nyx_string_builder_t *sb)
     {
         str_t q = (str_t) (node + 1);
 
-        size_t size = strlen(q);
+        size_t len = node->len;
 
         if(node->json)
         {
@@ -145,7 +151,7 @@ size_t nyx_string_builder_length(const nyx_string_builder_t *sb)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
-                for(; size > 0; size--)
+                for(; len > 0; len--)
                 {
                     switch(*q++)
                     {
@@ -184,7 +190,7 @@ size_t nyx_string_builder_length(const nyx_string_builder_t *sb)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
-                for(; size > 0; size--)
+                for(; len > 0; len--)
                 {
                     switch(*q++)
                     {
@@ -213,7 +219,7 @@ size_t nyx_string_builder_length(const nyx_string_builder_t *sb)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
-                for(; size > 0; size--)
+                for(; len > 0; len--)
                 {
                     switch(*q++)
                     {
@@ -241,7 +247,7 @@ size_t nyx_string_builder_length(const nyx_string_builder_t *sb)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
-                result += size;
+                result += len;
 
                 /*----------------------------------------------------------------------------------------------------*/
 
@@ -270,7 +276,7 @@ str_t nyx_string_builder_to_string(const nyx_string_builder_t *sb)
     {
         str_t q = (str_t) (node + 1);
 
-        size_t size = strlen(q);
+        size_t len = node->len;
 
         if(node->json)
         {
@@ -278,7 +284,7 @@ str_t nyx_string_builder_to_string(const nyx_string_builder_t *sb)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
-                for(; size > 0; size--)
+                for(; len > 0; len--)
                 {
                     switch((c = *q++))
                     {
@@ -316,7 +322,7 @@ str_t nyx_string_builder_to_string(const nyx_string_builder_t *sb)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
-                for(; size > 0; size--)
+                for(; len > 0; len--)
                 {
                     switch((c = *q++))
                     {
@@ -343,7 +349,7 @@ str_t nyx_string_builder_to_string(const nyx_string_builder_t *sb)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
-                for(; size > 0; size--)
+                for(; len > 0; len--)
                 {
                     switch((c = *q++))
                     {
@@ -374,7 +380,7 @@ str_t nyx_string_builder_to_string(const nyx_string_builder_t *sb)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
-                p = (str_t) memcpy(p, q, size) + size;
+                p = (str_t) memcpy(p, q, len) + len;
 
                 /*----------------------------------------------------------------------------------------------------*/
             }

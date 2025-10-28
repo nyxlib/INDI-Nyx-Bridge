@@ -50,6 +50,16 @@ void nyx_string_builder_clear(
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+void nyx_string_builder_append_buff(
+    /**/ nyx_string_builder_t *sb,
+    size_t len,
+    STR_t str,
+    bool json,
+    bool xml
+);
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 void nyx_string_builder_append_n(
     /*-*/ nyx_string_builder_t *sb,
     STR_t args[],
