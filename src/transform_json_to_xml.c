@@ -21,31 +21,31 @@ struct nyx_j2x_ctx_s
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static inline bool key_eq(struct mg_str k, STR_t s)
+static inline bool key_eq(struct mg_str str, STR_t s)
 {
     size_t n = strlen(s);
 
-    return k.len == n + 2
+    return str.len == n + 2
            &&
-           k.buf[0x0000000] == '"'
+           str.buf[0x0000000] == '"'
            &&
-           k.buf[k.len - 1] == '"'
+           str.buf[str.len - 1] == '"'
            &&
-           memcmp(k.buf + 1, s, n) == 0
+           memcmp(str.buf + 1, s, n) == 0
     ;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static inline bool key_is_attr(struct mg_str k)
+static inline bool key_is_attr(struct mg_str str)
 {
-    return k.len >= 4
+    return str.len >= 4
            &&
-           k.buf[0x0000000] == '"'
+           str.buf[0x0000000] == '"'
            &&
-           k.buf[k.len - 1] == '"'
+           str.buf[str.len - 1] == '"'
            &&
-           k.buf[1] == '@'
+           str.buf[1] == '@'
     ;
 }
 
