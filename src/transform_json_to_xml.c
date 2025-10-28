@@ -27,7 +27,7 @@ static inline bool key_eq(struct mg_str str, STR_t s)
 
     return str.len == n + 2
            &&
-           str.buf[0x0000000] == '"'
+           str.buf[0x000000000] == '"'
            &&
            str.buf[str.len - 1] == '"'
            &&
@@ -41,7 +41,7 @@ static inline bool key_is_attr(struct mg_str str)
 {
     return str.len >= 4
            &&
-           str.buf[0x0000000] == '"'
+           str.buf[0x000000000] == '"'
            &&
            str.buf[str.len - 1] == '"'
            &&
