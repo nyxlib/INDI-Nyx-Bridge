@@ -223,7 +223,7 @@ nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit_fn)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    result->sax_ctx = xmlCreatePushParserCtxt(&sax, result, "<stream>", 8, NULL);
+    result->sax_ctx = xmlCreatePushParserCtxt(&sax, result, "<stream>", 8, "indiserver");
 
     if(result->sax_ctx != NULL)
     {
