@@ -40,8 +40,6 @@ struct nyx_x2j_ctx_s
 };
 
 /*--------------------------------------------------------------------------------------------------------------------*/
-/* SAX HANDLERS                                                                                                       */
-/*--------------------------------------------------------------------------------------------------------------------*/
 
 static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
 {
@@ -127,11 +125,12 @@ static void sax_end(void *ud, __attribute__ ((unused)) const xmlChar *name)
     if(p->has_text)
     {
         str_t s = nyx_string_builder_to_string(p->txt_sb);
-        nyx_string_builder_clear(p->txt_sb);
 
         nyx_string_builder_append(p->sb, false, false, ",\"$\":\"");
         nyx_string_builder_append(p->sb, true, false, s);
         nyx_string_builder_append(p->sb, false, false, "\"");
+
+        nyx_string_builder_clear(p->txt_sb);
 
         p->has_text = false;
 
