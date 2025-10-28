@@ -15,7 +15,7 @@ static struct mg_mgr m_mgr = {0};
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static str_t m_indi_url = NULL;
+static STR_t m_indi_url = NULL;
 static str_t m_mqtt_url = NULL;
 static str_t m_mqtt_user = NULL;
 static str_t m_mqtt_pass = NULL;
@@ -200,6 +200,10 @@ void nyx_bridge_initialize()
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
+    m_indi_url = nyx_discover_indi_url();
+
+    /*----------------------------------------------------------------------------------------------------------------*/
+
     mg_log_set(MG_LL_INFO);
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -234,7 +238,6 @@ void nyx_bridge_finalize()
     nyx_x2j_close(m_x2j);
     nyx_j2x_close(m_j2x);
 
-    free(m_indi_url);
     free(m_mqtt_url);
     free(m_mqtt_user);
     free(m_mqtt_pass);
@@ -243,26 +246,11 @@ void nyx_bridge_finalize()
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void nyx_bridge_poll(
-    STR_t indi_url,
     STR_t mqtt_url,
     STR_t mqtt_user,
     STR_t mqtt_pass,
     int ms
 ) {
-    /*----------------------------------------------------------------------------------------------------------------*/
-
-    if(!streq(m_indi_url, indi_url))
-    {
-        free(m_indi_url);
-
-        m_indi_url = strdup(nz(indi_url));
-
-        if(m_indi_connection != NULL)
-        {
-            m_indi_connection->is_closing = 1;
-        }
-    }
-
     /*----------------------------------------------------------------------------------------------------------------*/
 
     if(!streq(m_mqtt_url, mqtt_url)

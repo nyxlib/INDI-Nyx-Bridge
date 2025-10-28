@@ -73,27 +73,6 @@ bool IndiNyxDriver::initProperties()
     deleteProperty("CONNECTION");
 
     /*----------------------------------------------------------------------------------------------------------------*/
-    /* INDI SETTINGS                                                                                                  */
-    /*----------------------------------------------------------------------------------------------------------------*/
-
-    IUFillText(&INDISettingsT[0], "INDI_URL", "URL", "tcp://localhost:7624");
-    //FillText(&INDISettingsT[1], "INDI_USERNAME", "Username", "");
-    //FillText(&INDISettingsT[2], "INDI_PASSWORD", "Password", "");
-
-    IUFillTextVector(
-        &INDISettingsTP,
-        INDISettingsT,
-        1,
-        getDeviceName(),
-        "INDI_SETTINGS",
-        "INDI Settings",
-        MAIN_CONTROL_TAB,
-        IP_RW,
-        60,
-        IPS_IDLE
-    );
-
-    /*----------------------------------------------------------------------------------------------------------------*/
     /* MQTT SETTINGS                                                                                                  */
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -125,18 +104,15 @@ void IndiNyxDriver::ISGetProperties(const char *dev)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    INDI::DefaultDevice::ISGetProperties(dev);
-
-    defineProperty(&INDISettingsTP);
     defineProperty(&MQTTSettingsTP);
+
+    loadConfig(true, MQTTSettingsTP.name);
+
+    IDSetText(&MQTTSettingsTP, nullptr);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    loadConfig(true, INDISettingsTP.name);
-    IDSetText(&INDISettingsTP, nullptr);
-
-    loadConfig(true, MQTTSettingsTP.name);
-    IDSetText(&MQTTSettingsTP, nullptr);
+    INDI::DefaultDevice::ISGetProperties(dev);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 }
@@ -147,49 +123,23 @@ bool IndiNyxDriver::ISNewText(const char *dev, const char *name, char *texts[], 
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(dev != nullptr && !strcmp(dev, getDeviceName()))
+    if(dev != nullptr && strcmp(dev, getDeviceName()) == 0 && strcmp(name, MQTTSettingsTP.name) == 0)
     {
         /*------------------------------------------------------------------------------------------------------------*/
 
-        if(!strcmp(name, INDISettingsTP.name))
-        {
-            /*--------------------------------------------------------------------------------------------------------*/
+        IUUpdateText(&MQTTSettingsTP, texts, names, n);
 
-            IUUpdateText(&INDISettingsTP, texts, names, n);
-
-            MQTTSettingsTP.s = IPS_OK;
-
-            /*--------------------------------------------------------------------------------------------------------*/
-
-            IDSetText(&INDISettingsTP, nullptr);
-
-            saveConfig(true, INDISettingsTP.name);
-
-            /*--------------------------------------------------------------------------------------------------------*/
-
-            return true;
-        }
+        MQTTSettingsTP.s = IPS_OK;
 
         /*------------------------------------------------------------------------------------------------------------*/
 
-        if(!strcmp(name, MQTTSettingsTP.name))
-        {
-            /*--------------------------------------------------------------------------------------------------------*/
+        IDSetText(&MQTTSettingsTP, nullptr);
 
-            IUUpdateText(&MQTTSettingsTP, texts, names, n);
+        saveConfig(true, MQTTSettingsTP.name);
 
-            MQTTSettingsTP.s = IPS_OK;
+        /*------------------------------------------------------------------------------------------------------------*/
 
-            /*--------------------------------------------------------------------------------------------------------*/
-
-            IDSetText(&MQTTSettingsTP, nullptr);
-
-            saveConfig(true, MQTTSettingsTP.name);
-
-            /*--------------------------------------------------------------------------------------------------------*/
-
-            return true;
-        }
+        return true;
 
         /*------------------------------------------------------------------------------------------------------------*/
     }
@@ -207,7 +157,6 @@ bool IndiNyxDriver::saveConfigItems(FILE *fp)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    IUSaveConfigText(fp, &INDISettingsTP);
     IUSaveConfigText(fp, &MQTTSettingsTP);
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -228,12 +177,11 @@ void IndiNyxDriver::workerThreadFunc()
     while(m_WorkerRunning.load())
     {
         nyx_bridge_poll(
-            INDISettingsT[0].text,
             MQTTSettingsT[0].text,
             MQTTSettingsT[1].text,
             MQTTSettingsT[2].text,
             /**/
-            25
+            25 /* ms */
         );
     }
 

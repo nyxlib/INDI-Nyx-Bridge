@@ -39,6 +39,7 @@ add_executable(indi_nyx
     src/indi_nyx_driver.cpp
     src/external/mongoose.c
     src/string_builder.c
+    src/port_finder.c
     src/logger.cpp
     src/bridge.c
     src/transform_json_to_xml.c
