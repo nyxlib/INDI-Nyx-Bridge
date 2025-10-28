@@ -75,7 +75,7 @@ static str_t dup_json_string(struct mg_str str)
 
         result = malloc(inner.len + 1);
 
-        if(!mg_json_unescape(inner, result, inner.len + 1))
+        if(mg_json_unescape(inner, result, inner.len + 1) == false)
         {
             memcpy(result, inner.buf, inner.len);
 
