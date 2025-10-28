@@ -21,7 +21,7 @@ struct nyx_j2x_ctx_s
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static inline bool key_eq(struct mg_str str, STR_t s)
+static bool key_eq(struct mg_str str, STR_t s)
 {
     size_t n = strlen(s);
 
@@ -37,7 +37,7 @@ static inline bool key_eq(struct mg_str str, STR_t s)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static inline bool key_is_attr(struct mg_str str)
+static bool key_is_attr(struct mg_str str)
 {
     return str.len >= 4
            &&
@@ -79,7 +79,7 @@ static str_t dup_json_string(struct mg_str str)
         {
             memcpy(result, inner.buf, inner.len);
 
-            result[inner.len] = 0;
+            result[inner.len] = '\0';
         }
 
         /*------------------------------------------------------------------------------------------------------------*/
