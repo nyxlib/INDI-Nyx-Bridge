@@ -7,9 +7,9 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
 #include "external/mongoose.h"
+
 #include "bridge.h"
 
 /*--------------------------------------------------------------------------------------------------------------------*/

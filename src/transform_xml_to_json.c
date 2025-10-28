@@ -7,7 +7,6 @@
 
 #include <ctype.h>
 #include <string.h>
-#include <stdbool.h>
 
 #include <libxml/SAX2.h>
 
