@@ -48,6 +48,7 @@ static int streq(STR_t a, STR_t b)
 {
     return strcmp(nz(a), nz(b)) == 0;
 }
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 static void x2j_emit(size_t len, STR_t json)
