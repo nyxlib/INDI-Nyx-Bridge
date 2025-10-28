@@ -81,7 +81,7 @@ void nyx_string_builder_clear(nyx_string_builder_t *sb)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void nyx_string_builder_append_buff(nyx_string_builder_t *sb, size_t len, STR_t str, bool json, bool xml)
+void nyx_string_builder_append_buff(nyx_string_builder_t *sb, bool json, bool xml, size_t len, STR_t str)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -114,7 +114,7 @@ void nyx_string_builder_append_buff(nyx_string_builder_t *sb, size_t len, STR_t 
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void nyx_string_builder_append_n(nyx_string_builder_t *sb, STR_t args[], size_t n, bool json, bool xml)
+void nyx_string_builder_append_n(nyx_string_builder_t *sb, bool json, bool xml, STR_t args[], size_t n)
 {
     for(size_t i = 0; i < n; i++)
     {
@@ -122,11 +122,11 @@ void nyx_string_builder_append_n(nyx_string_builder_t *sb, STR_t args[], size_t 
 
         if(str == NULL)
         {
-            nyx_string_builder_append_buff(sb, 6, "(null)", false, false);
+            nyx_string_builder_append_buff(sb, false, false, 6, "(null)");
         }
         else
         {
-            nyx_string_builder_append_buff(sb, strlen(str), str, json, xml);
+            nyx_string_builder_append_buff(sb, json, xml, strlen(str), str);
         }
     }
 }

@@ -52,20 +52,20 @@ void nyx_string_builder_clear(
 
 void nyx_string_builder_append_buff(
     /**/ nyx_string_builder_t *sb,
-    size_t len,
-    STR_t str,
     bool json,
-    bool xml
+    bool xml,
+    size_t len,
+    STR_t str
 );
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void nyx_string_builder_append_n(
     /*-*/ nyx_string_builder_t *sb,
-    STR_t args[],
-    size_t n,
     bool json,
-    bool xml
+    bool xml,
+    STR_t args[],
+    size_t n
 );
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -98,7 +98,7 @@ str_t nyx_string_builder_to_cstring(
                                                                                                                        \
     STR_t args[] = {__VA_ARGS__};                                                                                      \
                                                                                                                        \
-    nyx_string_builder_append_n(sb, args, sizeof(args) / sizeof(STR_t), json, xml);                                    \
+    nyx_string_builder_append_n(sb, json, xml, args, sizeof(args) / sizeof(STR_t));                                    \
 })
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -109,7 +109,7 @@ str_t nyx_string_builder_to_cstring(
                                                                                                                        \
     nyx_string_builder_t *_sb = nyx_string_builder_new();                                                              \
                                                                                                                        \
-    nyx_string_builder_append_n(_sb, args, sizeof(args) / sizeof(STR_t), json, xml);                                   \
+    nyx_string_builder_append_n(_sb, json, xml, args, sizeof(args) / sizeof(STR_t));                                   \
                                                                                                                        \
     _sb;                                                                                                               \
 })

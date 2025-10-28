@@ -139,9 +139,9 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
             str_t aval = dup_json_string(v);
 
             nyx_string_builder_append(out, false, false, " ");
-            nyx_string_builder_append_buff(out, k.len - 3, k.buf + 2, false, false);
+            nyx_string_builder_append_buff(out, false, false, k.len - 3, k.buf + 2);
             nyx_string_builder_append(out, false, false, "=\"");
-            nyx_string_builder_append(out, false, true , aval);
+            nyx_string_builder_append(out, false, true, aval);
             nyx_string_builder_append(out, false, false, "\"");
 
             free(aval);
