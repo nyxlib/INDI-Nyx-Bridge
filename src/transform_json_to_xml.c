@@ -106,29 +106,31 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    struct mg_str tag_js = (struct mg_str) {0};
-    struct mg_str txt_js = (struct mg_str) {0};
-    struct mg_str kids_js = (struct mg_str) {0};
+    struct mg_str tag_str = (struct mg_str) {0};
+    struct mg_str txt_str = (struct mg_str) {0};
+    struct mg_str kids_str = (struct mg_str) {0};
 
     for(size_t offset = 0; (offset = mg_json_next(obj, offset, &k, &v)) != 0;)
     {
-        /*--*/ if(tag_js.len == 0 && key_eq(k, "<>")) {
-            tag_js = v;
-        } else if(txt_js.len == 0 && key_eq(k, ("$"))) {
-            txt_js = v;
-        } else if(kids_js.len == 0 && key_eq(k, "children")) {
-            kids_js = v;
+        /*--*/ if(tag_str.len == 0 && key_eq(k, "<>")) {
+            tag_str = v;
+        } else if(txt_str.len == 0 && key_eq(k, ("$"))) {
+            txt_str = v;
+        } else if(kids_str.len == 0 && key_eq(k, "children")) {
+            kids_str = v;
         }
     }
 
-    if(tag_js.len == 0)
+    if(tag_str.len == 0)
     {
         return;
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    str_t tag = dup_json_string(tag_js);
+    str_t tag = dup_json_string(tag_str);
+
+    /*----------------------------------------------------------------------------------------------------------------*/
 
     nyx_string_builder_append(out, false, false, "<", tag);
 
@@ -136,23 +138,23 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
     {
         if(key_is_attr(k))
         {
-            str_t aval = dup_json_string(v);
+            str_t val = dup_json_string(v);
 
             nyx_string_builder_append(out, false, false, " ");
             nyx_string_builder_append_buff(out, false, false, k.len - 3, k.buf + 2);
             nyx_string_builder_append(out, false, false, "=\"");
-            nyx_string_builder_append(out, false, true, aval);
+            nyx_string_builder_append(out, false, true, val);
             nyx_string_builder_append(out, false, false, "\"");
 
-            free(aval);
+            free(val);
         }
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    bool has_txt = txt_js.len > 0;
+    bool has_txt = txt_str.len > 0;
 
-    bool has_kids = kids_js.len > 0;
+    bool has_kids = kids_str.len > 0;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -162,14 +164,14 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 
         if(has_txt)
         {
-            str_t tv = dup_json_string(txt_js);
-            nyx_string_builder_append(out, false, true, tv);
-            free(tv);
+            str_t txt = dup_json_string(txt_str);
+            nyx_string_builder_append(out, false, true, txt);
+            free(txt);
         }
 
         if(has_kids)
         {
-            for(size_t offset = 0; (offset = mg_json_next(kids_js, offset, &k, &v)) != 0;)
+            for(size_t offset = 0; (offset = mg_json_next(kids_str, offset, &k, &v)) != 0;)
             {
                 j2x_emit_element(out, v);
             }
@@ -195,13 +197,13 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 
 nyx_j2x_ctx_t *nyx_j2x_init(nyx_j2x_emit_fn emit_fn)
 {
-    nyx_j2x_ctx_t *ctx = malloc(sizeof(nyx_j2x_ctx_t));
+    nyx_j2x_ctx_t *result = malloc(sizeof(nyx_j2x_ctx_t));
 
-    memset(ctx, 0x00, sizeof(*ctx));
+    memset(result, 0x00, sizeof(nyx_j2x_ctx_t));
 
-    ctx->emit_fn = emit_fn;
+    result->emit_fn = emit_fn;
 
-    return ctx;
+    return result;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

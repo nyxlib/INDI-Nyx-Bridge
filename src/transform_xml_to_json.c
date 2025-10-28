@@ -124,17 +124,17 @@ static void sax_end(void *ud, __attribute__ ((unused)) const xmlChar *name)
 
     if(x2j_ctx->has_text)
     {
-        str_t s = nyx_string_builder_to_string(x2j_ctx->txt_sb);
+        str_t txt = nyx_string_builder_to_string(x2j_ctx->txt_sb);
 
         nyx_string_builder_append(x2j_ctx->sb, false, false, ",\"$\":\"");
-        nyx_string_builder_append(x2j_ctx->sb, true, false, s);
+        nyx_string_builder_append(x2j_ctx->sb, true, false, txt);
         nyx_string_builder_append(x2j_ctx->sb, false, false, "\"");
 
         nyx_string_builder_clear(x2j_ctx->txt_sb);
 
         x2j_ctx->has_text = false;
 
-        free(s);
+        free(txt);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -255,22 +255,15 @@ void nyx_x2j_close(nyx_x2j_ctx_t *ctx)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(ctx->sax_ctx != NULL)
-    {
-        xmlParseChunk(ctx->sax_ctx, "</stream>", 9, 1);
-
-        xmlFreeParserCtxt(ctx->sax_ctx);
-    }
+    xmlParseChunk(ctx->sax_ctx, "</stream>", 9, 1);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    if(ctx->sb != NULL) {
-        nyx_string_builder_free(ctx->sb);
-    }
+    xmlFreeParserCtxt(ctx->sax_ctx);
 
-    if(ctx->txt_sb != NULL) {
-        nyx_string_builder_free(ctx->txt_sb);
-    }
+    nyx_string_builder_free(ctx->sb);
+
+    nyx_string_builder_free(ctx->txt_sb);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
