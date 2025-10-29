@@ -40,11 +40,11 @@ static nyx_j2x_ctx_t *m_j2x = NULL;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static STR_t nz(STR_t s) { return s ? s : ""; }
+static STR_t nz(STR_t s) { return s != NULL ? s : ""; }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static int streq(STR_t a, STR_t b)
+static bool streq(STR_t a, STR_t b)
 {
     return strcmp(nz(a), nz(b)) == 0;
 }

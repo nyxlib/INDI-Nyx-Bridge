@@ -62,11 +62,11 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
     {
         if(x2j_ctx->children_cnt == 0)
         {
-            nyx_string_builder_append(x2j_ctx->sb, false, false, ",\"children\":[");
+            nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, ",\"children\":[");
         }
         else
         {
-            nyx_string_builder_append(x2j_ctx->sb, false, false, ",");
+            nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, ",");
         }
     }
     else
@@ -76,19 +76,19 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    nyx_string_builder_append(x2j_ctx->sb, false, false, "{\"<>\":\"");
-    nyx_string_builder_append(x2j_ctx->sb, true , false, (STR_t) name);
-    nyx_string_builder_append(x2j_ctx->sb, false, false, "\"");
+    nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "{\"<>\":\"");
+    nyx_string_builder_append(x2j_ctx->sb, NYX_SB_ESCAPE_JSON, (STR_t) name);
+    nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "\"");
 
     if(atts != NULL)
     {
         for(int i = 0; atts[i + 0] != NULL && atts[i + 1] != NULL; i += 2)
         {
-            nyx_string_builder_append(x2j_ctx->sb, false, false, ",\"@");
-            nyx_string_builder_append(x2j_ctx->sb, true , false, (STR_t) atts[i + 0]);
-            nyx_string_builder_append(x2j_ctx->sb, false, false, "\":\"");
-            nyx_string_builder_append(x2j_ctx->sb, true , false, (STR_t) atts[i + 1]);
-            nyx_string_builder_append(x2j_ctx->sb, false, false, "\"");
+            nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, ",\"@");
+            nyx_string_builder_append(x2j_ctx->sb, NYX_SB_ESCAPE_JSON, (STR_t) atts[i + 0]);
+            nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "\":\"");
+            nyx_string_builder_append(x2j_ctx->sb, NYX_SB_ESCAPE_JSON, (STR_t) atts[i + 1]);
+            nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "\"");
         }
     }
 
@@ -127,9 +127,9 @@ static void sax_end(void *ud, __attribute__ ((unused)) const xmlChar *name)
     {
         str_t txt = nyx_string_builder_to_string(x2j_ctx->txt_sb);
 
-        nyx_string_builder_append(x2j_ctx->sb, false, false, ",\"$\":\"");
-        nyx_string_builder_append(x2j_ctx->sb, true, false, txt);
-        nyx_string_builder_append(x2j_ctx->sb, false, false, "\"");
+        nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, ",\"$\":\"");
+        nyx_string_builder_append(x2j_ctx->sb, NYX_SB_ESCAPE_JSON, txt);
+        nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "\"");
 
         nyx_string_builder_clear(x2j_ctx->txt_sb);
 
@@ -144,10 +144,10 @@ static void sax_end(void *ud, __attribute__ ((unused)) const xmlChar *name)
     {
         if(x2j_ctx->children_cnt > 0)
         {
-            nyx_string_builder_append(x2j_ctx->sb, false, false, "]");
+            nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "]");
         }
 
-        nyx_string_builder_append(x2j_ctx->sb, false, false, "}");
+        nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "}");
 
         x2j_ctx->children_cnt = 0;
 
@@ -162,7 +162,7 @@ static void sax_end(void *ud, __attribute__ ((unused)) const xmlChar *name)
     }
     else if(d == 2)
     {
-        nyx_string_builder_append(x2j_ctx->sb, false, false, "}");
+        nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "}");
 
         x2j_ctx->children_cnt++;
     }
@@ -193,7 +193,7 @@ static void sax_txt(void *ud, const xmlChar *str, int len)
 
     if(s <= e)
     {
-        nyx_string_builder_append(p->txt_sb, true, false, s);
+        nyx_string_builder_append(p->txt_sb, NYX_SB_ESCAPE_JSON, s);
 
         p->has_text = true;
     }

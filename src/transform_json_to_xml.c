@@ -45,7 +45,7 @@ static bool key_is_attr(struct mg_str str)
            &&
            str.buf[str.len - 1] == '"'
            &&
-           str.buf[1] == '@'
+           str.buf[1] == /*-*/ '@' /*-*/
     ;
 }
 
@@ -132,7 +132,7 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    nyx_string_builder_append(out, false, false, "<", tag);
+    nyx_string_builder_append(out, NYX_SB_NO_ESCAPE, "<", tag);
 
     for(size_t offset = 0; (offset = mg_json_next(obj, offset, &k, &v)) != 0; )
     {
@@ -140,11 +140,11 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
         {
             str_t val = dup_json_string(v);
 
-            nyx_string_builder_append(out, false, false, " ");
-            nyx_string_builder_append_buff(out, false, false, k.len - 3, k.buf + 2);
-            nyx_string_builder_append(out, false, false, "=\"");
-            nyx_string_builder_append(out, false, true, val);
-            nyx_string_builder_append(out, false, false, "\"");
+            nyx_string_builder_append(out, NYX_SB_NO_ESCAPE, " ");
+            nyx_string_builder_append_buff(out, NYX_SB_NO_ESCAPE, k.len - 3, k.buf + 2);
+            nyx_string_builder_append(out, NYX_SB_NO_ESCAPE, "=\"");
+            nyx_string_builder_append(out, NYX_SB_ESCAPE_XML, val);
+            nyx_string_builder_append(out, NYX_SB_NO_ESCAPE, "\"");
 
             free(val);
         }
@@ -160,12 +160,12 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 
     if(has_txt || has_kids)
     {
-        nyx_string_builder_append(out, false, false, ">");
+        nyx_string_builder_append(out, NYX_SB_NO_ESCAPE, ">");
 
         if(has_txt)
         {
             str_t txt = dup_json_string(txt_str);
-            nyx_string_builder_append(out, false, true, txt);
+            nyx_string_builder_append(out, NYX_SB_ESCAPE_XML, txt);
             free(txt);
         }
 
@@ -177,11 +177,11 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
             }
         }
 
-        nyx_string_builder_append(out, false, false, "</", tag, ">");
+        nyx_string_builder_append(out, NYX_SB_NO_ESCAPE, "</", tag, ">");
     }
     else
     {
-        nyx_string_builder_append(out, false, false, "/>");
+        nyx_string_builder_append(out, NYX_SB_NO_ESCAPE, "/>");
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/

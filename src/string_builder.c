@@ -16,8 +16,7 @@ typedef struct nyx_string_builder_node_s
 {
     size_t len;
 
-    bool json;
-    bool xml;
+    uint32_t flags;
 
     struct nyx_string_builder_node_s *next;
 
@@ -81,7 +80,7 @@ void nyx_string_builder_clear(nyx_string_builder_t *sb)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void nyx_string_builder_append_buff(nyx_string_builder_t *sb, bool json, bool xml, size_t len, STR_t str)
+void nyx_string_builder_append_buff(nyx_string_builder_t *sb, uint32_t flags, size_t len, STR_t str)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -92,8 +91,7 @@ void nyx_string_builder_append_buff(nyx_string_builder_t *sb, bool json, bool xm
     /*----------------------------------------------------------------------------------------------------------------*/
 
     node->len = len;
-    node->json = json;
-    node->xml = xml;
+    node->flags = flags;
     node->next = NULL;
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -114,7 +112,7 @@ void nyx_string_builder_append_buff(nyx_string_builder_t *sb, bool json, bool xm
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void nyx_string_builder_append_n(nyx_string_builder_t *sb, bool json, bool xml, STR_t args[], size_t n)
+void nyx_string_builder_append_n(nyx_string_builder_t *sb, uint32_t flags, STR_t args[], size_t n)
 {
     for(size_t i = 0; i < n; i++)
     {
@@ -122,11 +120,11 @@ void nyx_string_builder_append_n(nyx_string_builder_t *sb, bool json, bool xml, 
 
         if(str == NULL)
         {
-            nyx_string_builder_append_buff(sb, false, false, 6, "(null)");
+            nyx_string_builder_append_buff(sb, NYX_SB_NO_ESCAPE, 6, "(null)");
         }
         else
         {
-            nyx_string_builder_append_buff(sb, json, xml, strlen(str), str);
+            nyx_string_builder_append_buff(sb, flags, strlen(str), str);
         }
     }
 }
@@ -145,9 +143,9 @@ size_t nyx_string_builder_length(const nyx_string_builder_t *sb)
 
         size_t len = node->len;
 
-        if(node->json)
+        if((node->flags & NYX_SB_ESCAPE_JSON) != 0)
         {
-            if(node->xml)
+            if((node->flags & NYX_SB_ESCAPE_XML) != 0)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
@@ -215,7 +213,7 @@ size_t nyx_string_builder_length(const nyx_string_builder_t *sb)
         }
         else
         {
-            if(node->xml)
+            if((node->flags & NYX_SB_ESCAPE_XML) != 0)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
@@ -278,9 +276,9 @@ str_t nyx_string_builder_to_string(const nyx_string_builder_t *sb)
 
         size_t len = node->len;
 
-        if(node->json)
+        if((node->flags & NYX_SB_ESCAPE_JSON) != 0)
         {
-            if(node->xml)
+            if((node->flags & NYX_SB_ESCAPE_XML) != 0)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
@@ -345,7 +343,7 @@ str_t nyx_string_builder_to_string(const nyx_string_builder_t *sb)
         }
         else
         {
-            if(node->xml)
+            if((node->flags & NYX_SB_ESCAPE_XML) != 0)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 

@@ -50,7 +50,7 @@ static str_t read_entire_file(STR_t path)
 
             /*--------------------------------------------------------------------------------------------------------*/
 
-            nyx_string_builder_append_buff(sb, false, false, n, chunk);
+            nyx_string_builder_append_buff(sb, NYX_SB_NO_ESCAPE, n, chunk);
 
             /*--------------------------------------------------------------------------------------------------------*/
         }

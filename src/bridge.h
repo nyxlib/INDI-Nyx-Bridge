@@ -8,7 +8,7 @@
 #pragma once
 
 #include <stddef.h>
-#include <stdbool.h>
+#include <stdint.h>
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
@@ -23,6 +23,12 @@ typedef const char *STR_t;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 /* STRING BUILDER                                                                                                     */
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+#define NYX_SB_NO_ESCAPE        (0x0000)
+#define NYX_SB_ESCAPE_JSON      (1 << 0)
+#define NYX_SB_ESCAPE_XML       (1 << 1)
+
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 typedef struct
@@ -52,8 +58,7 @@ void nyx_string_builder_clear(
 
 void nyx_string_builder_append_buff(
     /**/ nyx_string_builder_t *sb,
-    bool json,
-    bool xml,
+    uint32_t flags,
     size_t len,
     STR_t str
 );
@@ -62,8 +67,7 @@ void nyx_string_builder_append_buff(
 
 void nyx_string_builder_append_n(
     /*-*/ nyx_string_builder_t *sb,
-    bool json,
-    bool xml,
+    uint32_t flags,
     STR_t args[],
     size_t n
 );
@@ -88,22 +92,22 @@ str_t nyx_string_builder_to_string(
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-#define nyx_string_builder_append(sb, json, xml, ...) ({                                                               \
+#define nyx_string_builder_append(sb, flags, ...) ({                                                                   \
                                                                                                                        \
     STR_t args[] = {__VA_ARGS__};                                                                                      \
                                                                                                                        \
-    nyx_string_builder_append_n(sb, json, xml, args, sizeof(args) / sizeof(STR_t));                                    \
+    nyx_string_builder_append_n(sb, flags, args, sizeof(args) / sizeof(STR_t));                                        \
 })
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-#define nyx_string_builder_from(json, xml, ...) ({                                                                     \
+#define nyx_string_builder_from(flags, ...) ({                                                                         \
                                                                                                                        \
     STR_t args[] = {__VA_ARGS__};                                                                                      \
                                                                                                                        \
     nyx_string_builder_t *_sb = nyx_string_builder_new();                                                              \
                                                                                                                        \
-    nyx_string_builder_append_n(_sb, json, xml, args, sizeof(args) / sizeof(STR_t));                                   \
+    nyx_string_builder_append_n(_sb, flags, args, sizeof(args) / sizeof(STR_t));                                       \
                                                                                                                        \
     _sb;                                                                                                               \
 })
