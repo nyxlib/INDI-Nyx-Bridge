@@ -29,6 +29,12 @@ static struct mg_connection *m_mqtt_connection = NULL;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+#define MQTT_CLIENT_ID "INDI 🡘 Nyx Bridge"
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+#define MQTT_TOPIC_PING "nyx/ping/node"
+
 #define MQTT_TOPIC_IN "nyx/cmd/json"
 
 #define MQTT_TOPIC_OUT "nyx/json"
@@ -97,7 +103,7 @@ static void indi_handler(struct mg_connection *connection, int ev, void *ev_data
     }
     else if(ev == MG_EV_ERROR)
     {
-        MG_ERROR(("%lu INDI ERROR %s", connection->id, (STR_t ) ev_data));
+        MG_ERROR(("%lu INDI ERROR %s", connection->id, (STR_t) ev_data));
     }
     else if(ev == MG_EV_CONNECT)
     {
@@ -140,7 +146,7 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
     }
     else if(ev == MG_EV_ERROR)
     {
-        MG_ERROR(("%lu MQTT ERROR %s", connection->id, (STR_t ) ev_data));
+        MG_ERROR(("%lu MQTT ERROR %s", connection->id, (STR_t) ev_data));
     }
     else if(ev == MG_EV_MQTT_OPEN)
     {
@@ -161,6 +167,22 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
 
             nyx_j2x_feed(m_j2x, message->data.len, message->data.buf);
         }
+    }
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+static void ping_handler(void *arg)
+{
+    if(m_mqtt_connection != NULL)
+    {
+        struct mg_mqtt_opts pub = {
+            .topic   = mg_str(MQTT_TOPIC_PING),
+            .message = mg_str(MQTT_CLIENT_ID),
+            .qos     = 1,
+        };
+
+        mg_mqtt_pub(m_mqtt_connection, &pub);
     }
 }
 
@@ -211,7 +233,9 @@ void nyx_bridge_initialize()
 
     STR_t env = getenv("NYX_VERBOSE");
 
-    mg_log_set(env != NULL && strcmp(env, "1") == 0 ? MG_LL_DEBUG : MG_LL_INFO);
+    mg_log_set(env != NULL && strcmp(env, "1") == 0 ? MG_LL_DEBUG
+                                                    : MG_LL_INFO
+    );
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -219,7 +243,7 @@ void nyx_bridge_initialize()
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    m_mqtt_opts.client_id = mg_str("$$");
+    m_mqtt_opts.client_id = mg_str(MQTT_CLIENT_ID);
 
     m_mqtt_opts.version = 0x04;
     m_mqtt_opts.clean = true;
@@ -235,7 +259,9 @@ void nyx_bridge_initialize()
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    mg_timer_add(&m_mgr, 2000, MG_TIMER_REPEAT | MG_TIMER_RUN_NOW, retry_timer_handler, NULL);
+    mg_timer_add(&m_mgr, 5000UL, MG_TIMER_REPEAT | MG_TIMER_RUN_NOW, ping_handler, NULL);
+
+    mg_timer_add(&m_mgr, 2000UL, MG_TIMER_REPEAT | MG_TIMER_RUN_NOW, retry_timer_handler, NULL);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 }
