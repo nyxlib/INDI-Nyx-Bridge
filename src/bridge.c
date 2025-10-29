@@ -60,6 +60,7 @@ static void x2j_emit(size_t len, STR_t json)
         struct mg_mqtt_opts opts = {
             .topic = mg_str(MQTT_TOPIC_OUT),
             .message = mg_str_n(json, len),
+            .qos = 2,
         };
 
         mg_mqtt_pub(m_mqtt_connection, &opts);
@@ -147,6 +148,7 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
     {
         struct mg_mqtt_opts opts = {
             .topic = mg_str(MQTT_TOPIC_IN),
+            .qos = 2,
         };
 
         mg_mqtt_sub(connection, &opts);
@@ -173,6 +175,7 @@ static void ping_handler(void *arg)
         struct mg_mqtt_opts opts = {
             .topic = mg_str(MQTT_TOPIC_PING),
             .message = mg_str(NYX_BRIDGE_NAME),
+            .qos = 0,
         };
 
         mg_mqtt_pub(m_mqtt_connection, &opts);
