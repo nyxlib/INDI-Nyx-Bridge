@@ -106,8 +106,9 @@ void IndiNyxDriver::ISGetProperties(const char *dev)
 
     defineProperty(&MQTTSettingsTP);
 
-    loadConfig(true, MQTTSettingsTP.name);
+    /*----------------------------------------------------------------------------------------------------------------*/
 
+    loadConfig(true, MQTTSettingsTP.name);
     IDSetText(&MQTTSettingsTP, nullptr);
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -128,14 +129,12 @@ bool IndiNyxDriver::ISNewText(const char *dev, const char *name, char *texts[], 
         /*------------------------------------------------------------------------------------------------------------*/
 
         IUUpdateText(&MQTTSettingsTP, texts, names, n);
-
         MQTTSettingsTP.s = IPS_OK;
 
         /*------------------------------------------------------------------------------------------------------------*/
 
-        IDSetText(&MQTTSettingsTP, nullptr);
-
         saveConfig(true, MQTTSettingsTP.name);
+        IDSetText(&MQTTSettingsTP, nullptr);
 
         /*------------------------------------------------------------------------------------------------------------*/
 
