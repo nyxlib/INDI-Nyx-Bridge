@@ -75,7 +75,7 @@ static str_t read_entire_file(STR_t path)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static char indi_url[64];
+static char indiserver_url[64];
 
 #define DEFAULT_INDI_PORT 7624
 
@@ -152,11 +152,11 @@ STR_t nyx_discover_indi_url(void)
     /* BUILD INDISERVER ADDRESS                                                                                       */
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    snprintf(indi_url, sizeof(indi_url), "tcp://localhost:%d", port);
+    snprintf(indiserver_url, sizeof(indiserver_url), "tcp://localhost:%d", port);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    return indi_url;
+    return indiserver_url;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
