@@ -31,7 +31,8 @@ static str_t read_entire_file(STR_t path)
 
     size_t n;
 
-    do {
+    do
+    {
         /*------------------------------------------------------------------------------------------------------------*/
 
         n = fread(chunk, 1, sizeof(chunk), fp);
@@ -114,17 +115,17 @@ STR_t nyx_discover_indi_url(void)
             {
                 /*----------------------------------------------------------------------------------------------------*/
 
-                size_t k = (size_t) m[1].rm_eo
-                           -
-                           (size_t) m[1].rm_so
+                size_t size = (size_t) m[1].rm_eo
+                              -
+                              (size_t) m[1].rm_so
                 ;
 
-                if(k > sizeof(buff) - 1)
+                if(size > sizeof(buff) - 1)
                 {
-                    k = sizeof(buff) - 1;
+                    size = sizeof(buff) - 1;
                 }
 
-                strncpy(buff, content + m[1].rm_so, k)[k] = '\0';
+                strncpy(buff, content + m[1].rm_so, size)[size] = '\0';
 
                 /*----------------------------------------------------------------------------------------------------*/
 
