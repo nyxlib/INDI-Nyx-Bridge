@@ -225,7 +225,7 @@ void nyx_bridge_initialize()
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    mg_timer_add(&m_mgr, 1000, MG_TIMER_REPEAT | MG_TIMER_RUN_NOW, retry_timer_handler, NULL);
+    mg_timer_add(&m_mgr, 2000, MG_TIMER_REPEAT | MG_TIMER_RUN_NOW, retry_timer_handler, NULL);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 }
