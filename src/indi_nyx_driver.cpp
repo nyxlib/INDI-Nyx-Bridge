@@ -180,7 +180,6 @@ void IndiNyxDriver::workerThreadFunc()
             MQTTSettingsT[0].text,
             MQTTSettingsT[1].text,
             MQTTSettingsT[2].text,
-            /**/
             25 /* ms */
         );
     }
