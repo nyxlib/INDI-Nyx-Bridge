@@ -51,7 +51,7 @@ IndiNyxDriver::~IndiNyxDriver()
 
 const char *IndiNyxDriver::getDefaultName()
 {
-    return "INDI 🡘 Nyx Bridge";
+    return NYX_BRIDGE_NAME;
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

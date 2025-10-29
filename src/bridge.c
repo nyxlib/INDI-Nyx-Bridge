@@ -29,10 +29,6 @@ static struct mg_connection *m_mqtt_connection = NULL;
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-#define MQTT_CLIENT_ID "INDI 🡘 Nyx Bridge"
-
-/*--------------------------------------------------------------------------------------------------------------------*/
-
 #define MQTT_TOPIC_PING "nyx/ping/node"
 
 #define MQTT_TOPIC_IN "nyx/cmd/json"
@@ -178,7 +174,7 @@ static void ping_handler(void *arg)
     {
         struct mg_mqtt_opts pub = {
             .topic   = mg_str(MQTT_TOPIC_PING),
-            .message = mg_str(MQTT_CLIENT_ID),
+            .message = mg_str(NYX_BRIDGE_NAME),
             .qos     = 1,
         };
 
@@ -243,7 +239,7 @@ void nyx_bridge_initialize()
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    m_mqtt_opts.client_id = mg_str(MQTT_CLIENT_ID);
+    m_mqtt_opts.client_id = mg_str(NYX_BRIDGE_NAME);
 
     m_mqtt_opts.version = 0x04;
     m_mqtt_opts.clean = true;
