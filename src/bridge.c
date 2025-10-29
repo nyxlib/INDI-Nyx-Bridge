@@ -62,6 +62,8 @@ static void x2j_emit(size_t len, STR_t json)
         };
 
         mg_mqtt_pub(m_mqtt_connection, &pub);
+
+        MG_DEBUG(("%s", json));
     }
 }
 
@@ -72,6 +74,8 @@ static void j2x_emit(size_t len, STR_t xml)
     if(m_indi_connection != NULL && len > 0 && xml != NULL)
     {
         mg_send(m_indi_connection, xml, len);
+
+        MG_DEBUG(("%s", xml));
     }
 }
 
@@ -109,6 +113,8 @@ static void indi_handler(struct mg_connection *connection, int ev, void *ev_data
     {
         if(connection->recv.len > 0)
         {
+            MG_DEBUG(("%.*s", connection->recv.len, (STR_t) connection->recv.buf));
+
             nyx_x2j_feed(m_x2j, connection->recv.len, (STR_t) connection->recv.buf);
 
             mg_iobuf_del(&connection->recv, 0, connection->recv.len);
@@ -151,6 +157,8 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
 
         if(message->data.len > 0)
         {
+            MG_DEBUG(("%.*s", message->data.len, (STR_t) message->data.buf));
+
             nyx_j2x_feed(m_j2x, message->data.len, message->data.buf);
         }
     }
