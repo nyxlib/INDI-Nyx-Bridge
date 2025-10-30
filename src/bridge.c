@@ -225,7 +225,7 @@ static void retry_timer_handler(void *arg)
     {
         /*------------------------------------------------------------------------------------------------------------*/
 
-        STR_t message1 = "{\"<>\":\"delINDI\"}";
+        STR_t message1 = "{\"<>\":\"delINDIProperties\"}";
 
         json_emit(strlen(message1), message1);
 
