@@ -78,7 +78,7 @@ static void sax_start(void *ud, const xmlChar *name, const xmlChar **atts)
 
     nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "{\"<>\":\"");
     nyx_string_builder_append(x2j_ctx->sb, NYX_SB_ESCAPE_JSON, (STR_t) name);
-    nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "\"");
+    nyx_string_builder_append(x2j_ctx->sb, NYX_SB_NO_ESCAPE, "\",\"@client\":\"INDI\"");
 
     if(atts != NULL)
     {
