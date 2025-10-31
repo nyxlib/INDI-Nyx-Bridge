@@ -11,6 +11,10 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+#define MQTT_CLIENT_NAME "$$nyx-indi-bridge$$"
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
 #define MQTT_TOPIC_PING "nyx/ping/node"
 
 #define MQTT_TOPIC_IN "nyx/cmd/json"
@@ -173,7 +177,7 @@ static void ping_handler(void *arg)
     {
         struct mg_mqtt_opts opts = {
             .topic = mg_str(MQTT_TOPIC_PING),
-            .message = mg_str(NYX_BRIDGE_NAME),
+            .message = mg_str(MQTT_CLIENT_NAME),
             .qos = 0,
         };
 
@@ -263,7 +267,7 @@ void nyx_bridge_initialize()
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    m_mqtt_opts.client_id = mg_str(NYX_BRIDGE_NAME);
+    m_mqtt_opts.client_id = mg_str(MQTT_CLIENT_NAME);
 
     m_mqtt_opts.version = 0x04;
     m_mqtt_opts.clean = true;
