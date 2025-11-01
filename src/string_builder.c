@@ -248,7 +248,6 @@ size_t nyx_string_builder_length(const nyx_string_builder_t *sb)
                 result += len;
 
                 /*----------------------------------------------------------------------------------------------------*/
-
             }
         }
     }
