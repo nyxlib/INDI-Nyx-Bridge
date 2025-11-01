@@ -66,7 +66,7 @@ void nyx_string_builder_append_n(
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 void nyx_string_builder_append_buff(
-    /**/ nyx_string_builder_t *sb,
+    /*-*/ nyx_string_builder_t *sb,
     uint32_t flags,
     size_t len,
     STR_t str
