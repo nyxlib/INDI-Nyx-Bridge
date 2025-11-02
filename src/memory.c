@@ -90,3 +90,43 @@ buff_t nyx_memory_realloc(buff_t buff, size_t size)
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
+
+str_t nyx_string_dup(STR_t s)
+{
+    if(s != NULL)
+    {
+        size_t len = strlen(s);
+
+        str_t str = nyx_memory_alloc(len + 1);
+
+        memcpy(str, s, len);
+
+        str[len] = '\0';
+
+        return str;
+    }
+
+    return NULL;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/
+
+str_t nyx_string_ndup(STR_t s, size_t n)
+{
+    if(s != NULL)
+    {
+        size_t len = strnlen(s, n);
+
+        str_t str = nyx_memory_alloc(len + 1);
+
+        memcpy(str, s, len);
+
+        str[len] = '\0';
+
+        return str;
+    }
+
+    return NULL;
+}
+
+/*--------------------------------------------------------------------------------------------------------------------*/

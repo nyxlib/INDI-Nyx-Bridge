@@ -324,9 +324,9 @@ void nyx_bridge_poll(
         nyx_memory_free(m_mqtt_user);
         nyx_memory_free(m_mqtt_pass);
 
-        m_mqtt_url = strdup(nz(mqtt_url));
-        m_mqtt_user = strdup(nz(mqtt_user));
-        m_mqtt_pass = strdup(nz(mqtt_pass));
+        m_mqtt_url = nyx_string_dup(nz(mqtt_url));
+        m_mqtt_user = nyx_string_dup(nz(mqtt_user));
+        m_mqtt_pass = nyx_string_dup(nz(mqtt_pass));
 
         if(m_mqtt_connection != NULL)
         {
