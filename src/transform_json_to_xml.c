@@ -5,7 +5,6 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-#include <stdlib.h>
 #include <string.h>
 
 #include "external/mongoose.h"
@@ -73,7 +72,7 @@ static str_t dup_json_string(struct mg_str str)
             n - 2
         );
 
-        result = malloc(inner.len + 1);
+        result = nyx_memory_alloc(inner.len + 1);
 
         if(mg_json_unescape(inner, result, inner.len + 1) == false)
         {
@@ -146,7 +145,7 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
             nyx_string_builder_append(out, NYX_SB_ESCAPE_XML, val);
             nyx_string_builder_append(out, NYX_SB_NO_ESCAPE, "\"");
 
-            free(val);
+            nyx_memory_free(val);
         }
     }
 
@@ -166,7 +165,7 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
         {
             str_t txt = dup_json_string(txt_str);
             nyx_string_builder_append(out, NYX_SB_ESCAPE_XML, txt);
-            free(txt);
+            nyx_memory_free(txt);
         }
 
         if(has_kids)
@@ -186,7 +185,7 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    free(tag);
+    nyx_memory_free(tag);
 
     /*----------------------------------------------------------------------------------------------------------------*/
 }
@@ -197,7 +196,7 @@ static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 
 nyx_j2x_ctx_t *nyx_j2x_init(nyx_j2x_emit_fn emit_fn)
 {
-    nyx_j2x_ctx_t *result = malloc(sizeof(nyx_j2x_ctx_t));
+    nyx_j2x_ctx_t *result = nyx_memory_alloc(sizeof(nyx_j2x_ctx_t));
 
     memset(result, 0x00, sizeof(nyx_j2x_ctx_t));
 
@@ -210,7 +209,7 @@ nyx_j2x_ctx_t *nyx_j2x_init(nyx_j2x_emit_fn emit_fn)
 
 void nyx_j2x_close(nyx_j2x_ctx_t *ctx)
 {
-    free(ctx);
+    nyx_memory_free(ctx);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -225,7 +224,7 @@ void nyx_j2x_feed(const nyx_j2x_ctx_t *ctx, size_t len, STR_t text)
 
         str_t xml = nyx_string_builder_to_string(sb);
         ctx->emit_fn(strlen(xml), xml);
-        free(xml);
+        nyx_memory_free(xml);
 
         nyx_string_builder_free(sb);
     }

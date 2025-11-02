@@ -6,7 +6,6 @@
 /*--------------------------------------------------------------------------------------------------------------------*/
 
 #include <ctype.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include <libxml/SAX2.h>
@@ -135,7 +134,7 @@ static void sax_end(void *ud, __attribute__ ((unused)) const xmlChar *name)
 
         x2j_ctx->has_text = false;
 
-        free(txt);
+        nyx_memory_free(txt);
     }
 
     /*----------------------------------------------------------------------------------------------------------------*/
@@ -157,7 +156,7 @@ static void sax_end(void *ud, __attribute__ ((unused)) const xmlChar *name)
         {
             str_t out = nyx_string_builder_to_string(x2j_ctx->sb);
             x2j_ctx->emit_fn(strlen(out), out);
-            free(out);
+            nyx_memory_free(out);
         }
     }
     else if(d == 2)
@@ -218,7 +217,7 @@ nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit_fn)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    nyx_x2j_ctx_t *result = malloc(sizeof(nyx_x2j_ctx_t));
+    nyx_x2j_ctx_t *result = nyx_memory_alloc(sizeof(nyx_x2j_ctx_t));
 
     memset(result, 0x00, sizeof(nyx_x2j_ctx_t));
 
@@ -232,7 +231,7 @@ nyx_x2j_ctx_t *nyx_x2j_init(nyx_x2j_emit_fn emit_fn)
     }
     else
     {
-        free(result);
+        nyx_memory_free(result);
 
         return NULL;
     }
@@ -268,7 +267,7 @@ void nyx_x2j_close(nyx_x2j_ctx_t *ctx)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    free(ctx);
+    nyx_memory_free(ctx);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/

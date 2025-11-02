@@ -28,7 +28,7 @@ nyx_string_builder_t *nyx_string_builder_new()
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    nyx_string_builder_t *sb = malloc(sizeof(nyx_string_builder_t));
+    nyx_string_builder_t *sb = nyx_memory_alloc(sizeof(nyx_string_builder_t));
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
@@ -46,7 +46,7 @@ void nyx_string_builder_free(nyx_string_builder_t *sb)
 {
     nyx_string_builder_clear(sb);
 
-    free(sb);
+    nyx_memory_free(sb);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -65,7 +65,7 @@ void nyx_string_builder_clear(nyx_string_builder_t *sb)
 
         /*------------------------------------------------------------------------------------------------------------*/
 
-        free(temp);
+        nyx_memory_free(temp);
 
         /*------------------------------------------------------------------------------------------------------------*/
     }
@@ -84,7 +84,7 @@ void nyx_string_builder_append_buff(nyx_string_builder_t *sb, uint32_t flags, si
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    node_t *node = malloc(sizeof(node_t) + len + 1);
+    node_t *node = nyx_memory_alloc(sizeof(node_t) + len + 1);
 
     memcpy((str_t) (node + 1), str, len);
 
@@ -263,7 +263,7 @@ str_t nyx_string_builder_to_string(const nyx_string_builder_t *sb)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    str_t result = malloc(nyx_string_builder_length(sb) + 1), p = result;
+    str_t result = nyx_memory_alloc(nyx_string_builder_length(sb) + 1), p = result;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

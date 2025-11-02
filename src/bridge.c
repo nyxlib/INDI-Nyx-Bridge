@@ -299,9 +299,9 @@ void nyx_bridge_finalize()
     nyx_x2j_close(m_x2j);
     nyx_j2x_close(m_j2x);
 
-    free(m_mqtt_url);
-    free(m_mqtt_user);
-    free(m_mqtt_pass);
+    nyx_memory_free(m_mqtt_url);
+    nyx_memory_free(m_mqtt_user);
+    nyx_memory_free(m_mqtt_pass);
 }
 
 /*--------------------------------------------------------------------------------------------------------------------*/
@@ -320,9 +320,9 @@ void nyx_bridge_poll(
        ||
        !streq(m_mqtt_pass, mqtt_pass)
     ) {
-        free(m_mqtt_url);
-        free(m_mqtt_user);
-        free(m_mqtt_pass);
+        nyx_memory_free(m_mqtt_url);
+        nyx_memory_free(m_mqtt_user);
+        nyx_memory_free(m_mqtt_pass);
 
         m_mqtt_url = strdup(nz(mqtt_url));
         m_mqtt_user = strdup(nz(mqtt_user));
