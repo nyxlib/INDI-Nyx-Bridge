@@ -20,11 +20,11 @@ extern "C" {
 /* MEMORY                                                                                                             */
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-typedef /*-*/ void *buff_t;
-typedef const void *BUFF_t;
+#define buff_t /*-*/ void *
+#define BUFF_t const void *
 
-typedef /*-*/ char *str_t;
-typedef const char *STR_t;
+#define str_t /*-*/ char *
+#define STR_t const char *
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
