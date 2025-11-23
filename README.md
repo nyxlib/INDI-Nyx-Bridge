@@ -39,12 +39,6 @@ make
 sudo make install
 ```
 
-# Uninstalling INDI 🡒 Nyx Bridge
-
-```bash
-sudo rm /usr/local/bin/indi_nyx
-```
-
 # Configuring and using INDI 🡒 Nyx Bridge
 
 ```bash
@@ -58,6 +52,12 @@ Using your preferred INDI client, configure the MQTT URL and credentials:
 </div>
 
 Enjoy INDI in the Nyx ecosystem!
+
+# Uninstalling INDI 🡒 Nyx Bridge
+
+```bash
+sudo rm /usr/local/bin/indi_nyx
+```
 
 # Home page and documentation
 
