@@ -25,7 +25,7 @@ within the Nyx environment. Messages are transported over MQTT as JSON documents
 # Typical architecture
 
 <div style="text-align: center;">
-    <img src="https://raw.githubusercontent.com/nyxlib/nyx-node/refs/heads/main/docs/img/nyx.svg" style="width: 600px;" />
+    <img src="bridge.png" style="width: 600px;" />
 </div> 
 
 # Building and installing INDI ↔ Nyx Bridge
