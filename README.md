@@ -51,7 +51,7 @@ Using your preferred INDI client, configure the MQTT URL and credentials:
     <img src="indi.png" style="width: 600px;" />
 </div>
 
-Enjoy the INDI 🡒 Nyx integration!
+Enjoy INDI in the Nyx ecosystem!
 
 # Home page and documentation
 
