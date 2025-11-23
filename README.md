@@ -28,7 +28,7 @@ within the Nyx environment. Messages are transported over MQTT as JSON documents
     <img src="https://raw.githubusercontent.com/nyxlib/nyx-node/refs/heads/main/docs/img/nyx.svg" style="width: 600px;" />
 </div> 
 
-# Build instructions
+# Building and installing INDI ↔ Nyx Bridge
 
 ```bash
 mkdir build
@@ -37,6 +37,12 @@ cd build
 cmake ..
 make
 sudo make install
+```
+
+# Using INDI ↔ Nyx Bridge
+
+```bash
+indiserver indi_nyx ...
 ```
 
 # Home page and documentation
