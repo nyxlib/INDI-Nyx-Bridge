@@ -25,7 +25,7 @@ the Nyx environment. Messages are transported over MQTT as JSON documents.
 # Typical architecture
 
 <div style="text-align: center;">
-    <img src="bridge.png" style="width: 600px;" />
+    <img src="img/bridge.png" style="width: 600px;" />
 </div> 
 
 # Building and installing INDI 🡒 Nyx Bridge
@@ -48,7 +48,7 @@ indiserver indi_nyx ...
 Using your preferred INDI client, configure the MQTT URL and credentials:
 
 <div style="text-align: center;">
-    <img src="indi.png" style="width: 600px;" />
+    <img src="img/indi.png" style="width: 600px;" />
 </div>
 
 Enjoy INDI in the Nyx ecosystem!
