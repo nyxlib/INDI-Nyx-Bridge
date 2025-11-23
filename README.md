@@ -39,17 +39,19 @@ make
 sudo make install
 ```
 
-# Using INDI ↔ Nyx Bridge
+# Configuring and using INDI ↔ Nyx Bridge
 
 ```bash
 indiserver indi_nyx ...
 ```
 
-# Configuring INDI ↔ Nyx Bridge
+Using your preferred INDI client, configure the MQTT URL and credentials:
 
 <div style="text-align: center;">
     <img src="indi.png" style="width: 600px;" />
-</div> 
+</div>
+
+Enjoy the INDI ↔ Nyx integration!
 
 # Home page and documentation
 
