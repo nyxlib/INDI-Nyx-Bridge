@@ -15,7 +15,7 @@ jobs:
             -   name: Install dependencies
                 run: |
                     apt-get update
-                    apt-get install -y gcc g++ git bash make cmake gnupg pkg-config software-properties-common
+                    apt-get install -y gcc g++ git bash make cmake gnupg pkg-config libxml2-dev software-properties-common
                     apt-add-repository -y ppa:mutlaqja/ppa
                     apt-get install -y libindi1
 
@@ -27,6 +27,5 @@ jobs:
                 run: |
                     mkdir -p build
                     cd build
-
                     cmake  ..
-                    make all
+                    make
