@@ -45,6 +45,12 @@ sudo make install
 indiserver indi_nyx ...
 ```
 
+# Configuring INDI ↔ Nyx Bridge
+
+<div style="text-align: center;">
+    <img src="indi.png" style="width: 600px;" />
+</div> 
+
 # Home page and documentation
 
 Home page:
