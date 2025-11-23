@@ -20,7 +20,7 @@ stack. Nodes can communicate via an [MQTT](https://mqtt.org/) broker, a [Redis](
 or directly over TCP, offering flexibility and scalability for distributed systems.
 
 This repository provides an INDI driver that implements a bridge enabling full integration of all INDI drivers within
-the Nyx environment. Messages are transported over MQTT as JSON documents.
+the Nyx environment. XML messages are converted to JSON and transported over MQTT.
 
 # Typical architecture
 
