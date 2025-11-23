@@ -22,8 +22,6 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 add_compile_options(-D_GNU_SOURCE -DMG_ENABLE_CUSTOM_LOG=1 -DMG_ENABLE_DIRLIST=0 -DMG_ENABLE_POLL=0 -DMG_ENABLE_EPOLL=1 -DMG_ENABLE_SSI=0)
 
 ########################################################################################################################
-# LIBS                                                                                                                 #
-########################################################################################################################
 
 include(CheckFunctionExists)
 
@@ -63,6 +61,12 @@ target_link_libraries(indi_nyx
     LibXml2::LibXml2
     Threads::Threads
     ${INDI_LIBRARIES}
+)
+
+########################################################################################################################
+
+install(TARGETS indi_nyx
+    RUNTIME DESTINATION bin
 )
 
 ########################################################################################################################
