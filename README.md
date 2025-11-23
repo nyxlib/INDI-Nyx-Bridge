@@ -39,6 +39,12 @@ make
 sudo make install
 ```
 
+# Uninstalling INDI 🡒 Nyx Bridge
+
+```bash
+sudo rm /usr/local/bin/indi_nyx
+```
+
 # Configuring and using INDI 🡒 Nyx Bridge
 
 ```bash
