@@ -45,7 +45,7 @@ sudo make install
 indiserver indi_nyx ...
 ```
 
-Using your preferred INDI client, configure the MQTT URL and credentials:
+Using your preferred INDI client, configure the MQTT URL, username and password:
 
 <div style="text-align: center;">
     <img src="img/indi.png" style="width: 600px;" />
