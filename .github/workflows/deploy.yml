@@ -29,3 +29,26 @@ jobs:
                     cd build
                     cmake  ..
                     make
+
+            -   name: Deploy project
+                shell: bash
+                env:
+                    SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+                    DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+                    DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+                run: |
+                    export HOME=/root
+                    
+                    mkdir -p ~/.ssh/
+                    chmod 700 ~/.ssh/
+                    
+                    echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
+                    chmod 600 ~/.ssh/id_rsa
+                    
+                    eval $(ssh-agent -s)
+                    ssh-add ~/.ssh/id_rsa
+                    
+                    ssh-keyscan -H "${DEPLOY_HOST}" >> ~/.ssh/known_hosts
+                    chmod 644 ~/.ssh/known_hosts
+                    
+                    scp ./build/indi_nyx "${DEPLOY_USER}@${DEPLOY_HOST}:/var/www/nyxlib.org/download/linux/x86_64/"
