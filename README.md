@@ -30,6 +30,8 @@ the Nyx environment. XML messages are converted to JSON and transported over MQT
 
 # Building and installing INDI 🡒 Nyx Bridge
 
+Make sure that `pkg-config`, `libxml2-dev` and `libindi-dev` are installed.
+
 ```bash
 mkdir build
 cd build
