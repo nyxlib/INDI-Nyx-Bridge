@@ -12,7 +12,7 @@
         <img src="https://raw.githubusercontent.com/nyxlib/nyx-node/main/docs/img/logo_uga.svg" height="72"></a>
 </div>
 
-# INDI ↔ Nyx Bridge
+# INDI 🡒 Nyx Bridge
 
 The `Nyx` project introduces a protocol, backward-compatible with [INDI 1.7](docs/specs/INDI.pdf), for controlling
 astronomical hardware. It enhances INDI by supporting multiple independent nodes, each with its own embedded protocol
@@ -28,7 +28,7 @@ within the Nyx environment. Messages are transported over MQTT as JSON documents
     <img src="bridge.png" style="width: 600px;" />
 </div> 
 
-# Building and installing INDI ↔ Nyx Bridge
+# Building and installing INDI 🡒 Nyx Bridge
 
 ```bash
 mkdir build
@@ -39,7 +39,7 @@ make
 sudo make install
 ```
 
-# Configuring and using INDI ↔ Nyx Bridge
+# Configuring and using INDI 🡒 Nyx Bridge
 
 ```bash
 indiserver indi_nyx ...
@@ -51,7 +51,7 @@ Using your preferred INDI client, configure the MQTT URL and credentials:
     <img src="indi.png" style="width: 600px;" />
 </div>
 
-Enjoy the INDI ↔ Nyx integration!
+Enjoy the INDI 🡒 Nyx integration!
 
 # Home page and documentation
 
