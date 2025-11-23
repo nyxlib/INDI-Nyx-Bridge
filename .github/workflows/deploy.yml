@@ -15,7 +15,7 @@ jobs:
             -   name: Install dependencies
                 run: |
                     apt-get update
-                    apt-get install -y gcc git bash make cmake gnupg software-properties-common
+                    apt-get install -y gcc g++ git bash make cmake gnupg software-properties-common
                     apt-add-repository -y ppa:mutlaqja/ppa
                     apt-get install -y libindi1
 
