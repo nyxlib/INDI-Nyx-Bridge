@@ -19,8 +19,8 @@ astronomical hardware. It enhances INDI by supporting multiple independent nodes
 stack. Nodes can communicate via an [MQTT](https://mqtt.org/) broker, a [Redis](https://redis.io/) cache (data streams)
 or directly over TCP, offering flexibility and scalability for distributed systems.
 
-This repository provides an INDI driver that implements a bridge enabling full integration of all INDI drivers within
-the Nyx environment. XML messages are converted to JSON ones and transported over MQTT.
+This repository provides an INDI driver that implements a bridge enabling full integration of all existing INDI drivers
+within the Nyx environment. XML messages are converted to JSON ones and transported over MQTT.
 
 # Typical architecture
 
