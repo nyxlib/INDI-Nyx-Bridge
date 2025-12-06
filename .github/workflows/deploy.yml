@@ -16,11 +16,15 @@ jobs:
             image: ubuntu:24.04
 
         steps:
-            -   name: Install dependencies
+            -   name: Install dependencies 1/2
                 run: |
                     apt-get update
                     apt-get install -y gcc g++ git bash make cmake gnupg pkg-config libxml2-dev software-properties-common
                     apt-add-repository -y ppa:mutlaqja/ppa
+
+            -   name: Install dependencies 2/2
+                run: |
+                    apt-get update
                     apt-get install -y libindi-dev
 
             -   name: Checkout repository
