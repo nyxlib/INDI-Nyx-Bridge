@@ -26,7 +26,7 @@ within the Nyx environment. XML messages are converted to JSON ones and transpor
 # Typical architecture
 
 <div style="text-align: center;">
-    <img src="img/bridge.png" style="width: 600px;" />
+    <img src="img/bridge.svg" style="width: 600px;" />
 </div> 
 
 # Building and installing INDI 🡒 Nyx Bridge
