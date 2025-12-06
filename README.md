@@ -1,4 +1,5 @@
 [![][Build Status img]][Build Status]
+[![][Quality Gate Status img]][Quality Gate Status]
 [![][License img]][License]
 
 <div>
@@ -87,6 +88,9 @@ divine figures, including Hypnos (Sleep) and Thanatos (Death).
 
 [Build Status]:https://github.com/nyxlib/INDI-Nyx-Bridge/actions/workflows/deploy.yml
 [Build Status img]:https://github.com/nyxlib/INDI-Nyx-Bridge/actions/workflows/deploy.yml/badge.svg
+
+[Quality Gate Status]:https://sonarcloud.io/summary/new_code?id=nyxlib_INDI-Nyx-Bridge
+[Quality Gate Status img]:https://sonarcloud.io/api/project_badges/measure?project=nyxlib_INDI-Nyx-Bridge&metric=alert_status
 
 [License]:https://www.gnu.org/licenses/gpl-2.0.txt
 [License img]:https://img.shields.io/badge/License-GPL_2.0_only-blue.svg
