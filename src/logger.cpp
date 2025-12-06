@@ -5,37 +5,43 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
+#include <cstdarg>
+
 #include <libindi/indilogger.h>
 
 #include "external/mongoose.h"
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-int nyx_curr_log_level = MG_LL_NONE;
+int nyx_curr_log_level = MG_LL_NONE; /* NOSONAR */
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-void nyx_log(const char *fmt, ...)
+void __attribute__((format(printf, 1, 2))) nyx_log(const char *fmt, ...)
 {
     if(nyx_curr_log_level <= mg_log_level)
     {
-        char buff[4096];
+        std::string buff;
+
+        buff.resize(4096);
 
         /*------------------------------------------------------------------------------------------------------------*/
 
         va_list ap;
         va_start(ap, fmt);
-        vsnprintf(buff, sizeof(buff), fmt, ap);
+        vsnprintf(buff.data(), buff.size(), fmt, ap);
         va_end(ap);
 
         /*------------------------------------------------------------------------------------------------------------*/
 
         switch(nyx_curr_log_level)
         {
-            case MG_LL_ERROR:   IDLog("[Bridge][ERROR] %s\n", buff);   break;
-            case MG_LL_INFO:    IDLog("[Bridge][INFO] %s\n", buff);    break;
-            case MG_LL_DEBUG:   IDLog("[Bridge][DEBUG] %s\n", buff);   break;
-            case MG_LL_VERBOSE: IDLog("[Bridge][VERBOSE] %s\n", buff); break;
+            case MG_LL_ERROR:   IDLog("[Bridge][ERROR] %s\n", buff.c_str());   break;
+            case MG_LL_INFO:    IDLog("[Bridge][INFO] %s\n", buff.c_str());    break;
+            case MG_LL_DEBUG:   IDLog("[Bridge][DEBUG] %s\n", buff.c_str());   break;
+            case MG_LL_VERBOSE: IDLog("[Bridge][VERBOSE] %s\n", buff.c_str()); break;
+            default:
+                break;
         }
 
         /*------------------------------------------------------------------------------------------------------------*/

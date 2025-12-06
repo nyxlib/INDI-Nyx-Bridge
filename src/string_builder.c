@@ -262,7 +262,7 @@ str_t nyx_string_builder_to_string(const nyx_string_builder_t *sb)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    str_t result = nyx_memory_alloc(nyx_string_builder_length(sb) + 1), *p = result;
+    str_t result = nyx_memory_alloc(nyx_string_builder_length(sb) + 1), /* NOSONAR */ *p = result;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 

@@ -93,7 +93,7 @@ STR_t nyx_discover_indi_url(void)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    snprintf(buff, sizeof(buff), "/proc/%d/cmdline", (int) getppid());
+    snprintf(buff, sizeof(buff), "/proc/%d/cmdline", getppid());
 
     str_t content = read_entire_file(buff);
 

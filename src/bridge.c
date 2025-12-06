@@ -66,7 +66,7 @@ static void json_emit(size_t len, STR_t json)
 {
     if(m_mqtt_connection != NULL && len > 0 && json != NULL)
     {
-        struct mg_mqtt_opts opts = {
+        const struct mg_mqtt_opts opts = {
             .topic = mg_str(MQTT_TOPIC_OUT),
             .message = mg_str_n(json, len),
             .qos = 2,
@@ -149,7 +149,7 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
     }
     else if(ev == MG_EV_MQTT_OPEN)
     {
-        struct mg_mqtt_opts opts = {
+        const struct mg_mqtt_opts opts = {
             .topic = mg_str(MQTT_TOPIC_IN),
             .qos = 2,
         };
@@ -158,7 +158,7 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
     }
     else if(ev == MG_EV_MQTT_MSG)
     {
-        struct mg_mqtt_message *message = ev_data;
+        const struct mg_mqtt_message *message = ev_data;
 
         if(message->data.len > 0)
         {
@@ -171,11 +171,11 @@ static void mqtt_handler(struct mg_connection *connection, int ev, void *ev_data
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static void ping_handler(void *arg)
+static void ping_handler(__attribute__ ((unused)) void *arg)
 {
     if(m_mqtt_connection != NULL)
     {
-        struct mg_mqtt_opts opts = {
+        const struct mg_mqtt_opts opts = {
             .topic = mg_str(MQTT_TOPIC_PING),
             .message = mg_str(MQTT_CLIENT_NAME),
             .qos = 0,
@@ -187,7 +187,7 @@ static void ping_handler(void *arg)
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-static void retry_timer_handler(void *arg)
+static void retry_timer_handler(__attribute__ ((unused)) void *arg)
 {
     /*----------------------------------------------------------------------------------------------------------------*/
     /* INDI                                                                                                           */

@@ -184,8 +184,8 @@ static void sax_txt(void *ud, const xmlChar *str, int len)
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
-    str_t s = (str_t) str + 0x00000;
-    str_t e = (str_t) str + len - 1;
+    str_t s = (str_t) /* NOSONAR */ str + 0x00000;
+    str_t e = (str_t) /* NOSONAR */ str + len - 1;
 
     while(s <= e && isspace((unsigned char) *s)) { *s = '\0'; s++; }
     while(e >= s && isspace((unsigned char) *e)) { *e = '\0'; e--; }

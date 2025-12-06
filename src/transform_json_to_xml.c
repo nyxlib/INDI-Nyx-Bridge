@@ -101,7 +101,8 @@ static str_t dup_json_string(struct mg_str str)
 
 static void j2x_emit_element(nyx_string_builder_t *out, struct mg_str obj)
 {
-    struct mg_str k, v;
+    struct mg_str k;
+    struct mg_str v;
 
     /*----------------------------------------------------------------------------------------------------------------*/
 
