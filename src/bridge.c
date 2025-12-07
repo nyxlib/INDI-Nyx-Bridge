@@ -15,7 +15,7 @@
 
 /*--------------------------------------------------------------------------------------------------------------------*/
 
-#define MQTT_TOPIC_PING "nyx/ping/node"
+#define MQTT_TOPIC_PING "nyx/ping/special"
 
 #define MQTT_TOPIC_IN "nyx/cmd/json"
 
